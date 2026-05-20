@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Holístic IA">
+<meta name="theme-color" content="#0a0c0b">
+<title>Diagnòstic Holístic IA · Consulta</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400;1,500&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0a0c0b;
+  --bg2: #111412;
+  --bg3: #181c19;
+  --bg4: #1f2420;
+  --border: rgba(140,195,120,0.12);
+  --border2: rgba(140,195,120,0.25);
+  --accent: #72b052;
+  --accent2: #90cc6e;
+  --accent3: #b8e098;
+  --text: #e2ece0;
+  --text2: #a4b89c;
+  --text3: #627060;
+  --danger: #e07070;
+  --gold: #c8a84a;
+  --red: #c84a4a;
+  --yellow: #c8b44a;
+  --green: #4ab87a;
+  --safe: env(safe-area-inset-bottom, 0px);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+html, body { height: 100%; background: var(--bg); color: var(--text); font-family: 'DM Mono', monospace; font-size: 13px; overflow: hidden; }
+
+/* APP SHELL */
+.app { display: flex; flex-direction: column; height: 100vh; height: 100dvh; }
+
+/* TOP BAR */
+.topbar {
+  background: var(--bg2);
+  border-bottom: 1px solid var(--border);
+  padding: 12px 16px;
+  padding-top: max(12px, env(safe-area-inset-top));
+  display: flex; align-items: center; gap: 10px;
+  flex-shrink: 0;
+}
+.topbar-logo { font-size: 1.2rem; }
+.topbar-title { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 400; font-style: italic; color: var(--text); flex: 1; }
+.topbar-pt { font-size: 10px; color: var(--accent2); background: rgba(114,176,82,.1); border: 1px solid rgba(114,176,82,.2); padding: 3px 9px; border-radius: 999px; max-width: 120px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* SCROLL CONTENT */
+.content { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+.page { display: none; padding: 16px; padding-bottom: calc(80px + var(--safe)); animation: fadeUp .25s ease; }
+.page.on { display: block; }
+
+/* BOTTOM NAV */
+.bottomnav {
+  background: var(--bg2);
+  border-top: 1px solid var(--border);
+  display: flex;
+  padding-bottom: max(8px, var(--safe));
+  flex-shrink: 0;
+  position: relative;
+  z-index: 10;
+}
+.nav-btn {
+  flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px;
+  padding: 8px 4px; cursor: pointer; transition: all .15s;
+  color: var(--text3); font-size: 9px; letter-spacing: .08em; text-transform: uppercase;
+  border: none; background: transparent;
+}
+.nav-btn.on { color: var(--accent2); }
+.nav-btn .ni { font-size: 1.3rem; line-height: 1; }
+.nav-btn.main-btn {
+  color: var(--bg);
+  background: var(--accent);
+  border-radius: 14px;
+  margin: 6px 8px;
+  flex: 1.4;
+}
+.nav-btn.main-btn:active { transform: scale(.96); background: var(--accent2); }
+
+/* CARDS */
+.card { background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; padding: 14px; margin-bottom: 12px; }
+.card-title { font-size: 9px; letter-spacing: .16em; text-transform: uppercase; color: var(--text3); margin-bottom: 10px; }
+
+/* STAT ROW */
+.stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 12px; }
+.stat-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; padding: 12px 10px; text-align: center; }
+.stat-num { font-family: 'Playfair Display', serif; font-size: 1.6rem; color: var(--accent2); line-height: 1; }
+.stat-label { font-size: 9px; color: var(--text3); letter-spacing: .1em; text-transform: uppercase; margin-top: 3px; }
+
+/* PATIENT PILLS */
+.pt-scroll { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; -webkit-overflow-scrolling: touch; margin-bottom: 12px; }
+.pt-scroll::-webkit-scrollbar { display: none; }
+.pt-pill {
+  flex-shrink: 0; display: flex; align-items: center; gap: 7px;
+  background: var(--bg2); border: 1px solid var(--border); border-radius: 999px;
+  padding: 6px 12px; cursor: pointer; transition: all .15s;
+  font-size: 11px; color: var(--text2); white-space: nowrap;
+}
+.pt-pill.on { border-color: var(--accent); background: rgba(114,176,82,.1); color: var(--accent2); }
+.pt-pill .pa { width: 22px; height: 22px; border-radius: 50%; background: var(--bg3); display: flex; align-items: center; justify-content: center; font-size: .85rem; flex-shrink: 0; }
+
+/* METHOD GRID */
+.method-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 14px; }
+.method-btn {
+  background: var(--bg2); border: 1px solid var(--border); border-radius: 10px;
+  padding: 12px 10px; cursor: pointer; transition: all .15s; text-align: center;
+  display: flex; flex-direction: column; align-items: center; gap: 5px;
+}
+.method-btn.on { border-color: var(--accent); background: rgba(114,176,82,.08); }
+.method-btn .mi { font-size: 1.5rem; line-height: 1; }
+.method-btn .ml { font-size: 10px; color: var(--text2); letter-spacing: .06em; }
+.method-btn.on .ml { color: var(--accent2); }
+
+/* CAMERA ZONE */
+.cam-zone {
+  border: 2px dashed var(--border2); border-radius: 14px;
+  background: var(--bg2); margin-bottom: 12px; overflow: hidden;
+  position: relative; cursor: pointer;
+  min-height: 200px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px;
+  transition: all .2s;
+}
+.cam-zone:active { border-color: var(--accent); background: rgba(114,176,82,.05); }
+.cam-zone.has { border-style: solid; border-color: var(--border2); }
+.cam-zone input { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+.cam-preview { width: 100%; max-height: 260px; object-fit: cover; display: block; border-radius: 12px; }
+.cam-icon { font-size: 2.2rem; opacity: .4; }
+.cam-label { font-size: 11px; color: var(--text3); text-align: center; line-height: 1.5; }
+.cam-remove { position: absolute; top: 8px; right: 8px; background: rgba(10,12,11,.85); border: 1px solid var(--border2); color: var(--text2); border-radius: 6px; padding: 4px 10px; font-size: 11px; cursor: pointer; z-index: 2; font-family: 'DM Mono', monospace; }
+
+/* CAMERA BUTTONS */
+.cam-buttons { display: flex; gap: 8px; margin-bottom: 12px; }
+.cam-btn { flex: 1; padding: 11px; border: 1px solid var(--border2); border-radius: 8px; background: var(--bg2); color: var(--text2); font-family: 'DM Mono', monospace; font-size: 11px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; transition: all .15s; }
+.cam-btn:active { border-color: var(--accent); color: var(--accent2); }
+.cam-btn.primary { background: var(--accent); color: var(--bg); border-color: transparent; }
+.cam-btn.primary:active { background: var(--accent2); }
+.cam-btn:disabled { opacity: .35; cursor: not-allowed; }
+
+/* AGE ALERT */
+.age-alert { border-radius: 8px; padding: 10px 14px; margin-bottom: 12px; font-size: 11px; line-height: 1.7; }
+.age-peds { background: rgba(100,170,220,.08); border: 1px solid rgba(100,170,220,.2); color: #6ab0d4; }
+.age-adult { background: rgba(74,184,122,.08); border: 1px solid rgba(74,184,122,.2); color: var(--green); }
+.age-mature { background: rgba(200,180,74,.08); border: 1px solid rgba(200,180,74,.2); color: var(--yellow); }
+.age-senior { background: rgba(200,74,74,.08); border: 1px solid rgba(200,74,74,.2); color: var(--red); }
+
+/* GUIDE */
+.guide { background: var(--bg3); border: 1px solid var(--border); border-radius: 8px; padding: 10px 13px; margin-bottom: 12px; font-size: 11px; color: var(--text2); line-height: 1.7; }
+
+/* RESULT */
+.result-card { background: var(--bg2); border: 1px solid var(--border2); border-radius: 12px; padding: 14px; margin-bottom: 12px; animation: fadeUp .3s ease; }
+.result-header { display: flex; align-items: center; gap: 7px; margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1px solid var(--border); flex-wrap: wrap; gap: 6px; }
+.rbadge { font-size: 9px; letter-spacing: .14em; text-transform: uppercase; background: rgba(114,176,82,.1); border: 1px solid rgba(114,176,82,.2); color: var(--accent2); padding: 3px 8px; border-radius: 3px; }
+.ubadge { font-size: 9px; padding: 3px 8px; border-radius: 3px; }
+.ug { background: rgba(74,184,122,.1); border: 1px solid rgba(74,184,122,.2); color: var(--green); }
+.uy { background: rgba(200,180,74,.1); border: 1px solid rgba(200,180,74,.2); color: var(--yellow); }
+.ur { background: rgba(200,74,74,.1); border: 1px solid rgba(200,74,74,.2); color: var(--red); }
+.result-body { font-family: 'Playfair Display', serif; font-size: .92rem; font-weight: 300; line-height: 1.85; color: var(--text); white-space: pre-wrap; }
+.result-body strong { font-family: 'DM Mono', monospace; font-size: .68rem; font-weight: 500; color: var(--accent2); letter-spacing: .1em; text-transform: uppercase; display: block; margin-top: .85rem; margin-bottom: .15rem; }
+.result-actions { display: flex; gap: 7px; margin-top: 10px; flex-wrap: wrap; }
+.raction { padding: 8px 13px; border: 1px solid var(--border2); border-radius: 6px; background: transparent; color: var(--text2); font-family: 'DM Mono', monospace; font-size: 10px; cursor: pointer; transition: all .15s; }
+.raction:active { border-color: var(--accent); color: var(--accent2); }
+
+/* PATIENTS PAGE */
+.pt-list { display: flex; flex-direction: column; gap: 8px; }
+.pt-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; padding: 13px; cursor: pointer; transition: all .15s; display: flex; align-items: center; gap: 11px; }
+.pt-card:active { border-color: var(--border2); transform: scale(.99); }
+.pt-avatar { width: 42px; height: 42px; border-radius: 50%; background: var(--bg3); border: 1px solid var(--border2); display: flex; align-items: center; justify-content: center; font-size: 1.2rem; flex-shrink: 0; }
+.pt-info { flex: 1; min-width: 0; }
+.pt-name { font-family: 'Playfair Display', serif; font-size: .95rem; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pt-meta { font-size: 10px; color: var(--text3); margin-top: 2px; }
+.pt-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
+/* PATIENT DETAIL */
+.pt-detail-header { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+.pt-detail-avatar { width: 52px; height: 52px; border-radius: 50%; background: var(--bg3); border: 2px solid var(--border2); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; flex-shrink: 0; }
+.pt-detail-name { font-family: 'Playfair Display', serif; font-size: 1.1rem; color: var(--text); }
+.pt-detail-sub { font-size: 10px; color: var(--text3); margin-top: 2px; }
+.info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; margin-bottom: 12px; }
+.info-item { background: var(--bg3); border-radius: 7px; padding: 9px 10px; }
+.info-label { font-size: 8px; letter-spacing: .14em; text-transform: uppercase; color: var(--text3); margin-bottom: 3px; }
+.info-value { font-size: 12px; color: var(--text); }
+.info-item.full { grid-column: 1/-1; }
+
+/* SORT TABS */
+.sort-tabs { display: flex; gap: 6px; margin-bottom: 12px; overflow-x: auto; }
+.sort-tab { flex-shrink: 0; padding: 5px 12px; border: 1px solid var(--border); border-radius: 999px; font-size: 10px; color: var(--text3); cursor: pointer; background: transparent; font-family: 'DM Mono', monospace; transition: all .15s; }
+.sort-tab.on { border-color: var(--accent); color: var(--accent2); background: rgba(114,176,82,.08); }
+
+/* SESSION ITEM */
+.sess-item { background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; margin-bottom: 8px; overflow: hidden; }
+.sess-header { display: flex; align-items: center; gap: 8px; padding: 11px 13px; cursor: pointer; }
+.sess-date { font-size: 10px; color: var(--text2); flex: 1; }
+.sess-mods { display: flex; gap: 3px; font-size: .85rem; }
+.sess-body { padding: 0 13px 13px; border-top: 1px solid var(--border); display: none; }
+.sess-body.open { display: block; }
+.sess-body-text { font-family: 'Playfair Display', serif; font-size: .88rem; font-weight: 300; line-height: 1.8; color: var(--text2); white-space: pre-wrap; margin-top: 10px; }
+.sess-body-text strong { font-family: 'DM Mono', monospace; font-size: .65rem; color: var(--accent2); letter-spacing: .1em; text-transform: uppercase; display: block; margin-top: .7rem; }
+.sess-actions { display: flex; gap: 6px; margin-top: 9px; }
+
+/* MODAL */
+.modal-ov { position: fixed; inset: 0; background: rgba(0,0,0,.8); z-index: 200; display: none; align-items: flex-end; justify-content: center; }
+.modal-ov.open { display: flex; }
+.modal { background: var(--bg2); border: 1px solid var(--border2); border-radius: 20px 20px 0 0; padding: 20px 20px calc(20px + var(--safe)); width: 100%; max-height: 85vh; overflow-y: auto; animation: slideUp .3s ease; }
+.modal-handle { width: 36px; height: 4px; background: var(--border2); border-radius: 2px; margin: 0 auto 16px; }
+.modal-title { font-family: 'Playfair Display', serif; font-size: 1.1rem; margin-bottom: 14px; color: var(--text); }
+.fg { margin-bottom: 11px; }
+.fl { font-size: 9px; letter-spacing: .12em; text-transform: uppercase; color: var(--text3); margin-bottom: 5px; display: block; }
+.fi { width: 100%; background: var(--bg3); border: 1px solid var(--border2); border-radius: 8px; padding: 10px 13px; color: var(--text); font-family: 'DM Mono', monospace; font-size: 13px; -webkit-appearance: none; }
+.fi:focus { outline: none; border-color: var(--accent); }
+.frow { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
+.modal-actions { display: flex; gap: 8px; margin-top: 14px; }
+.mbtn { flex: 1; padding: 12px; border-radius: 8px; font-family: 'DM Mono', monospace; font-size: 12px; cursor: pointer; transition: all .15s; }
+.mbtn-p { background: var(--accent); color: var(--bg); border: none; }
+.mbtn-o { background: transparent; border: 1px solid var(--border2); color: var(--text2); }
+
+/* SPINNER */
+.spinner { width: 16px; height: 16px; border: 2px solid rgba(10,12,11,.3); border-top-color: var(--bg); border-radius: 50%; animation: spin .7s linear infinite; display: none; }
+.spinner.on { display: inline-block; }
+
+/* EMPTY */
+.empty { text-align: center; padding: 40px 16px; color: var(--text3); }
+.empty .ei { font-size: 2rem; margin-bottom: 8px; opacity: .3; }
+.empty p { font-size: 12px; line-height: 1.8; }
+
+/* BTN */
+.btn-full { width: 100%; padding: 13px; background: var(--accent); color: var(--bg); border: none; border-radius: 10px; font-family: 'DM Mono', monospace; font-size: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all .18s; margin-bottom: 10px; }
+.btn-full:active { background: var(--accent2); transform: scale(.99); }
+.btn-full:disabled { opacity: .35; cursor: not-allowed; }
+.btn-outline-full { width: 100%; padding: 11px; background: transparent; color: var(--text2); border: 1px solid var(--border2); border-radius: 10px; font-family: 'DM Mono', monospace; font-size: 11px; cursor: pointer; transition: all .15s; margin-bottom: 8px; }
+.btn-outline-full:active { border-color: var(--accent); color: var(--accent2); }
+.btn-danger-full { color: var(--danger); border-color: rgba(224,112,112,.25); }
+
+@keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+@keyframes spin { to { transform: rotate(360deg); } }
+::-webkit-scrollbar { width: 3px; } ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+
+.disclaimer { font-size: 10px; color: var(--text3); line-height: 1.7; text-align: center; margin-top: 8px; padding: 8px; border: 1px solid var(--border); border-radius: 6px; }
+.back-btn { display: flex; align-items: center; gap: 6px; color: var(--text3); font-size: 11px; cursor: pointer; margin-bottom: 14px; padding: 4px 0; }
+.back-btn:active { color: var(--accent2); }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- TOP BAR -->
+  <div class="topbar">
+    <div class="topbar-logo">◉</div>
+    <div class="topbar-title" id="topTitle">Diagnòstic Holístic</div>
+    <div class="topbar-pt" id="topPt" style="display:none"></div>
+  </div>
+
+  <!-- CONTENT -->
+  <div class="content">
+
+    <!-- DASHBOARD -->
+    <div class="page on" id="page-home">
+      <div class="stats-row">
+        <div class="stat-card"><div class="stat-num" id="sP">0</div><div class="stat-label">Pacients</div></div>
+        <div class="stat-card"><div class="stat-num" id="sS">0</div><div class="stat-label">Sessions</div></div>
+        <div class="stat-card"><div class="stat-num" id="sT">0</div><div class="stat-label">Avui</div></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Accés ràpid</div>
+        <button class="btn-full" onclick="goPage('diagnosis')">◉ Nova Anàlisi</button>
+        <button class="btn-outline-full" onclick="openModal()">+ Nou pacient</button>
+        <button class="btn-outline-full" onclick="goPage('patients')">♦ Veure pacients</button>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Pacients recents</div>
+        <div class="pt-scroll" id="homePts">
+          <div style="font-size:11px;color:var(--text3)">Cap pacient encara</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">10 mètodes disponibles</div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px">
+          <span style="font-size:11px;color:var(--text2);background:var(--bg3);padding:4px 8px;border-radius:4px">👁 Iris</span>
+          <span style="font-size:11px;color:var(--text2);background:var(--bg3);padding:4px 8px;border-radius:4px">🫦 Llengua</span>
+          <span style="font-size:11px;color:var(--text2);background:var(--bg3);padding:4px 8px;border-radius:4px">💅 Ungles</span>
+          <span style="font-size:11px;color:var(--text2);background:var(--bg3);padding:4px 8px;border-radius:4px">🙂 Facial</span>
+          <span style="font-size:11px;color:var(--text2);background:var(--bg3);padding:4px 8px;border-radius:4px">🖐 Mà</span>
+          <span style="font-size:11px;color:var(--text2);background:var(--bg3);padding:4px 8px;border-radius:4px">🦶 Peu</span>
+          <span style="font-size:11px;color:var(--text2);background:var(--bg3);padding:4px 8px;border-radius:4px">🔬 Pell</span>
+          <span style="font-size:11px;color:var(--text2);background:var(--bg3);padding:4px 8px;border-radius:4px">👂 Orella</span>
+          <span style="font-size:11px;color:var(--text2);background:var(--bg3);padding:4px 8px;border-radius:4px">💋 Llavis</span>
+          <span style="font-size:11px;color:var(--text2);background:var(--bg3);padding:4px 8px;border-radius:4px">💇 Cabell</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- DIAGNOSIS -->
+    <div class="page" id="page-diagnosis">
+      <!-- Patient selector -->
+      <div class="card">
+        <div class="card-title">Pacient</div>
+        <div class="pt-scroll" id="diagPts">
+          <div style="font-size:11px;color:var(--text3)">Cap pacient. <span style="color:var(--accent2);cursor:pointer" onclick="openModal()">Crear →</span></div>
+        </div>
+        <div id="ageAlert" style="display:none"></div>
+      </div>
+
+      <!-- Method selector -->
+      <div class="card">
+        <div class="card-title">Mètode d'exploració</div>
+        <div class="method-grid" id="methodGrid">
+          <div class="method-btn on" data-mod="iris" onclick="selectMod(this)"><div class="mi">👁</div><div class="ml">Iris</div></div>
+          <div class="method-btn" data-mod="tongue" onclick="selectMod(this)"><div class="mi">🫦</div><div class="ml">Llengua</div></div>
+          <div class="method-btn" data-mod="nails" onclick="selectMod(this)"><div class="mi">💅</div><div class="ml">Ungles</div></div>
+          <div class="method-btn" data-mod="face" onclick="selectMod(this)"><div class="mi">🙂</div><div class="ml">Facial</div></div>
+          <div class="method-btn" data-mod="hand" onclick="selectMod(this)"><div class="mi">🖐</div><div class="ml">Reflex. Mà</div></div>
+          <div class="method-btn" data-mod="foot" onclick="selectMod(this)"><div class="mi">🦶</div><div class="ml">Reflex. Peu</div></div>
+          <div class="method-btn" data-mod="skin" onclick="selectMod(this)"><div class="mi">🔬</div><div class="ml">Pell/Acne</div></div>
+          <div class="method-btn" data-mod="ear" onclick="selectMod(this)"><div class="mi">👂</div><div class="ml">Orella</div></div>
+          <div class="method-btn" data-mod="lips" onclick="selectMod(this)"><div class="mi">💋</div><div class="ml">Llavis</div></div>
+          <div class="method-btn" data-mod="hair" onclick="selectMod(this)"><div class="mi">💇</div><div class="ml">Cabell</div></div>
+        </div>
+      </div>
+
+      <!-- Guide -->
+      <div class="guide" id="guideBox">👁 Fotografía l'ull de prop amb llum natural. Evita el flash. Centra l'iris.</div>
+
+      <!-- Camera zone -->
+      <div class="cam-zone" id="camZone" onclick="triggerCamera()">
+        <div class="cam-icon">📷</div>
+        <div class="cam-label">Toca per obrir la càmera<br><span style="font-size:10px;opacity:.6">o seleccionar de la galeria</span></div>
+        <input type="file" id="camInput" accept="image/*" capture="environment" onchange="handleCapture(event)" style="display:none">
+      </div>
+
+      <!-- Camera action buttons -->
+      <div class="cam-buttons" id="camButtons">
+        <button class="cam-btn" onclick="openGallery()">🖼 Galeria</button>
+        <button class="cam-btn" onclick="openCamera('environment')">📷 Càmera</button>
+        <button class="cam-btn" onclick="openCamera('user')">🤳 Frontal</button>
+      </div>
+      <input type="file" id="galInput" accept="image/*" onchange="handleCapture(event)" style="display:none">
+      <input type="file" id="envInput" accept="image/*" capture="environment" onchange="handleCapture(event)" style="display:none">
+      <input type="file" id="userInput" accept="image/*" capture="user" onchange="handleCapture(event)" style="display:none">
+
+      <!-- Analyze button -->
+      <button class="btn-full" id="analyzeBtn" onclick="analyze()" disabled>
+        <div class="spinner" id="spinner"></div>
+        <span id="btnTxt">Fes una foto per analitzar</span>
+      </button>
+
+      <!-- Results -->
+      <div id="resultArea"></div>
+    </div>
+
+    <!-- PATIENTS LIST -->
+    <div class="page" id="page-patients">
+      <button class="btn-full" onclick="openModal()">+ Nou pacient</button>
+      <div class="pt-list" id="ptList">
+        <div class="empty"><div class="ei">♦</div><p>Cap pacient registrat.</p></div>
+      </div>
+    </div>
+
+    <!-- PATIENT DETAIL -->
+    <div class="page" id="page-ptdetail">
+      <div class="back-btn" onclick="goPage('patients')">← Tornar</div>
+      <div class="pt-detail-header" id="ptDetailHeader"></div>
+      <div id="ptDetailInfo"></div>
+      <div id="ptDetailAge"></div>
+      <button class="btn-full" id="ptNewSess" onclick="">+ Nova sessió</button>
+      <div style="margin-bottom:10px">
+        <div class="card-title" style="margin-bottom:8px">Sessions</div>
+        <div class="sort-tabs">
+          <button class="sort-tab on" onclick="sortSess('date',this)">📅 Data</button>
+          <button class="sort-tab" onclick="sortSess('mod',this)">🔬 Mètode</button>
+          <button class="sort-tab" onclick="sortSess('urgency',this)">🚦 Urgència</button>
+        </div>
+        <div id="sessList"></div>
+      </div>
+      <button class="btn-outline-full btn-danger-full" id="ptDeleteBtn" onclick="">Eliminar pacient</button>
+    </div>
+
+  </div>
+
+  <!-- BOTTOM NAV -->
+  <div class="bottomnav">
+    <button class="nav-btn on" id="nb-home" onclick="goPage('home')"><div class="ni">⊞</div>Inici</button>
+    <button class="nav-btn main-btn" onclick="goPage('diagnosis')"><div class="ni">◉</div>Analitzar</button>
+    <button class="nav-btn" id="nb-patients" onclick="goPage('patients')"><div class="ni">♦</div>Pacients</button>
+  </div>
+</div>
+
+<!-- NEW PATIENT MODAL -->
+<div class="modal-ov" id="modalOv">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Nou Pacient</div>
+    <div class="frow">
+      <div class="fg"><label class="fl">Nom</label><input class="fi" id="pNom" placeholder="Nom" autocomplete="given-name"></div>
+      <div class="fg"><label class="fl">Cognoms</label><input class="fi" id="pCog" placeholder="Cognoms" autocomplete="family-name"></div>
+    </div>
+    <div class="frow">
+      <div class="fg"><label class="fl">Edat</label><input class="fi" id="pEdat" type="number" placeholder="Anys" min="0" max="120" inputmode="numeric"></div>
+      <div class="fg"><label class="fl">Sexe</label>
+        <select class="fi" id="pSexe"><option value="">—</option><option value="H">Home</option><option value="D">Dona</option><option value="A">Altres</option></select>
+      </div>
+    </div>
+    <div class="fg"><label class="fl">Motiu de consulta</label><input class="fi" id="pMotiu" placeholder="Dolor, fatiga..."></div>
+    <div class="fg"><label class="fl">Antecedents</label><input class="fi" id="pAntec" placeholder="Patologies, medicació..."></div>
+    <div class="modal-actions">
+      <button class="mbtn mbtn-o" onclick="closeModal()">Cancel·lar</button>
+      <button class="mbtn mbtn-p" onclick="savePatient()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── STATE ─────────────────────────────────────────────────
+let patients = JSON.parse(localStorage.getItem('hol_pts') || '[]');
+let sessions = JSON.parse(localStorage.getItem('hol_sess') || '[]');
+let activePtId = null;
+let detailPtId = null;
+let currentMod = 'iris';
+let capturedImage = null;
+let sortMode = 'date';
+
+// ── MOD CONFIG ────────────────────────────────────────────
+const modCfg = {
+  iris:   { icon:'👁',  label:'Iris',    guide:'Fotografía l\'ull de prop amb llum natural lateral. Evita el flash. Centra l\'iris a l\'enquadrament.' },
+  tongue: { icon:'🫦', label:'Llengua', guide:'Treu la llengua completament. Llum blanca. Sense menjar ni cafè 30 min abans. Captura punta, cos i vores.' },
+  nails:  { icon:'💅', label:'Ungles',  guide:'Les dues mans, llum natural, sense esmalt si és possible. Que es vegi la lúnula i el llit ungueal.' },
+  face:   { icon:'🙂', label:'Facial',  guide:'Rostre complet, llum uniforme frontal. Sense maquillatge si és possible. Expressió neutra.' },
+  hand:   { icon:'🖐', label:'Mà',      guide:'Palma de la mà oberta, llum natural. Les dues mans si és possible. Que es vegi bé la palma.' },
+  foot:   { icon:'🦶', label:'Peu',     guide:'Planta del peu, llum natural. Els dos peus si és possible. Que es vegi bé la planta completa.' },
+  skin:   { icon:'🔬', label:'Pell',    guide:'Zona de pell a analitzar, llum natural sense flash. Per acne facial: foto frontal sense maquillatge.' },
+  ear:    { icon:'👂', label:'Orella',  guide:'Orella externa, llum natural lateral. Si és possible les dues orelles. Pavelló auricular complet.' },
+  lips:   { icon:'💋', label:'Llavis',  guide:'Sense pintallavis. Boca lleugerament oberta. Llum natural frontal.' },
+  hair:   { icon:'💇', label:'Cabell',  guide:'Cuir cabellut i línia del cabell, llum natural. Zones de pèrdua o canvi de color.' },
+};
+
+function getAgeGroup(age) {
+  const a = parseInt(age); if (!a || isNaN(a)) return null;
+  if (a < 18) return 'peds'; if (a < 45) return 'adult'; if (a < 65) return 'mature'; return 'senior';
+}
+const ageInfo = {
+  peds:   { cls:'age-peds',   label:'🔵 Menor d\'edat', note:'L\'anàlisi tindrà en compte els patrons pediàtrics. Jing abundant, constitució en formació.' },
+  adult:  { cls:'age-adult',  label:'🟢 Adult jove (18–44)', note:'Reserves de Jing ben conservades. Es prioritzen patrons d\'excés sobre els de buit.' },
+  mature: { cls:'age-mature', label:'🟡 Edat madura (45–64)', note:'Possible inici de disminució del Jing. En dones, possible perimenopausa.' },
+  senior: { cls:'age-senior', label:'🔴 Sènior (65+)', note:'Anàlisi adaptada: distingeix envelliment fisiològic de signes patològics actius. Tècniques suaus.' }
+};
+
+function buildPrompt(mod, age) {
+  const a = age ? parseInt(age) : null;
+  const g = getAgeGroup(a);
+  const ageCtx = {
+    peds: `IMPORTANT: Pacient de ${a} anys (menor). Adapta l'anàlisi a l'edat pediàtrica.`,
+    adult: `Pacient de ${a} anys (adult jove). Prioritza patrons d'excés sobre els de buit.`,
+    mature: `Pacient de ${a} anys (edat madura). Considera possible disminució del Jing i perimenopausa.`,
+    senior: `IMPORTANT: Pacient de ${a} anys. Adapta totes les recomanacions a l'edat avançada. Tècniques suaus.`
+  };
+  const ctx = g ? ageCtx[g] : '';
+  const prompts = {
+    iris: `Ets un expert en iridologia. ${ctx} Analitza: 1. CONSTITUCIÓ BASE 2. ZONES IRIDALS 3. SIGNES ESPECÍFICS (lagunas, pigments, anells, wreath) 4. DIAGNÒSTIC FACIAL si es veu el rostre 5. LECTURA HOLÍSTICA 6. URGÈNCIA (VERDA/GROGA/VERMELLA) 7. RECOMANACIONS adaptades a l'edat`,
+    tongue: `Ets un expert en medicina xinesa (MXC). ${ctx} Analitza la llengua: 1. COS I COLOR 2. SABURRA 3. ZONES: punta (Cor/Pulmó), vores (Fetge/Vesícula), centre (Bazo/Estómac), base (Ronyó) 4. SIGNES ESPECIALS: fissures, papil·les, venes 5. PATRÓ MXC 6. URGÈNCIA (VERDA/GROGA/VERMELLA) 7. TRACTAMENT i punts d'acupuntura`,
+    nails: `Ets un expert en onicologia holística. ${ctx} Analitza: 1. LÚNULA: mida i presència 2. COLOR DEL LLIT 3. TEXTURA i estries 4. SIGNES: leuconiquia, Beau, onicomicosi 5. PELL DE LES MANS 6. LECTURA PER MERIDIANS 7. URGÈNCIA 8. SUPLEMENTACIÓ`,
+    face: `Ets un expert en diagnòstic facial holístic. ${ctx} Analitza: 1. ZONES DE REFLEXIÓ 2. COLORACIÓ per zones 3. TEXTURA DE LA PELL 4. SIGNES ESTRUCTURALS 5. DIAGNÒSTIC MXC 6. SIGNES HORMONALS 7. URGÈNCIA 8. RECOMANACIONS`,
+    hand: `Ets un expert en reflexologia de la mà. ${ctx} Analitza: 1. ZONES REFLEXES 2. COLORACIÓ 3. TEXTURA 4. LÍNIES PALMARS 5. ARTICULACIONS 6. URGÈNCIA 7. TRACTAMENT`,
+    foot: `Ets un expert en reflexologia plantar. ${ctx} Analitza: 1. ZONES REFLEXES 2. CAL·LOSITATS diagnòstiques 3. COLORACIÓ 4. DEFORMITATS 5. UNGLES DEL PEU 6. URGÈNCIA 7. ZONES A TREBALLAR`,
+    skin: `Ets un expert en diagnòstic cutani holístic. ${ctx} Analitza: 1. MAPA DE L'ACNE per zones orgàniques 2. TIPUS DE LESIONS 3. COLORACIÓ 4. TEXTURA 5. TAQUES 6. URGÈNCIA 7. TRACTAMENT`,
+    ear: `Ets un expert en auriculoteràpia. ${ctx} Analitza: 1. FORMA GENERAL 2. PLEC DIAGONAL DEL LÒBUL (signe de Frank — molt important a edat avançada) 3. ZONES REFLEXES 4. COLORACIÓ 5. SIGNES VASCULARS 6. URGÈNCIA 7. PUNTS AURICULARS prioritaris`,
+    lips: `Ets un expert en diagnòstic pels llavis. ${ctx} Analitza: 1. COLOR 2. HIDRATACIÓ 3. COMISSURES 4. LLAVI SUPERIOR vs INFERIOR 5. CONTORN 6. URGÈNCIA 7. DIAGNÒSTIC I TRACTAMENT`,
+    hair: `Ets un expert en tricologia holística. ${ctx} Analitza: 1. PÈRDUA per zones 2. TEXTURA 3. CUIR CABELLUT 4. COLOR i cabells blancs prematurs 5. DIAGNÒSTIC MXC 6. URGÈNCIA 7. TRACTAMENT`,
+  };
+  return prompts[mod] || prompts.iris;
+}
+
+// ── NAVIGATION ────────────────────────────────────────────
+function goPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('on'));
+  document.getElementById('page-' + id).classList.add('on');
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('on'));
+  document.getElementById('nb-' + id)?.classList.add('on');
+  const titles = { home:'Diagnòstic Holístic', diagnosis:'Nova Anàlisi', patients:'Pacients', ptdetail:'Fitxa Pacient' };
+  document.getElementById('topTitle').textContent = titles[id] || id;
+  if (id === 'patients') renderPatients();
+  updateStats();
+  window.scrollTo(0,0);
+}
+
+// ── MOD SELECTION ─────────────────────────────────────────
+function selectMod(el) {
+  document.querySelectorAll('.method-btn').forEach(b => b.classList.remove('on'));
+  el.classList.add('on');
+  currentMod = el.dataset.mod;
+  document.getElementById('guideBox').textContent = modCfg[currentMod].icon + ' ' + modCfg[currentMod].guide;
+  capturedImage = null;
+  renderCamZone();
+  checkBtn();
+}
+
+// ── CAMERA ────────────────────────────────────────────────
+function triggerCamera() {
+  document.getElementById('envInput').click();
+}
+function openGallery() { document.getElementById('galInput').click(); }
+function openCamera(facing) {
+  if (facing === 'environment') document.getElementById('envInput').click();
+  else document.getElementById('userInput').click();
+}
+
+function handleCapture(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  e.target.value = '';
+  const reader = new FileReader();
+  reader.onload = ev => {
+    capturedImage = { base64: ev.target.result.split(',')[1], type: file.type, src: ev.target.result };
+    renderCamZone();
+    checkBtn();
+  };
+  reader.readAsDataURL(file);
+}
+
+function renderCamZone() {
+  const zone = document.getElementById('camZone');
+  if (capturedImage) {
+    zone.classList.add('has');
+    zone.innerHTML = `
+      <button class="cam-remove" onclick="clearImage();event.stopPropagation()">✕ Treure</button>
+      <img class="cam-preview" src="${capturedImage.src}" alt="">`;
+    zone.onclick = null;
+  } else {
+    zone.classList.remove('has');
+    zone.innerHTML = `
+      <div class="cam-icon">📷</div>
+      <div class="cam-label">Toca per obrir la càmera<br><span style="font-size:10px;opacity:.6">o usa els botons de sota</span></div>`;
+    zone.onclick = triggerCamera;
+  }
+}
+
+function clearImage() {
+  capturedImage = null;
+  renderCamZone();
+  checkBtn();
+}
+
+function checkBtn() {
+  const btn = document.getElementById('analyzeBtn');
+  const txt = document.getElementById('btnTxt');
+  btn.disabled = !capturedImage;
+  txt.textContent = capturedImage ? `Analitzar · ${modCfg[currentMod].label}` : 'Fes una foto per analitzar';
+}
+
+// ── ANALYZE ───────────────────────────────────────────────
+async function analyze() {
+  const btn = document.getElementById('analyzeBtn');
+  const sp = document.getElementById('spinner');
+  const txt = document.getElementById('btnTxt');
+  const ra = document.getElementById('resultArea');
+  const pt = patients.find(p => p.id === activePtId);
+  const age = pt?.edat || null;
+
+  btn.disabled = true; sp.classList.add('on');
+  txt.textContent = 'Analitzant amb IA...';
+  ra.innerHTML = '';
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514', max_tokens: 1000,
+        messages: [{ role: 'user', content: [
+          { type: 'image', source: { type: 'base64', media_type: capturedImage.type, data: capturedImage.base64 } },
+          { type: 'text', text: buildPrompt(currentMod, age) }
+        ]}]
+      })
+    });
+    const data = await res.json();
+    if (data.error) throw new Error(data.error.message);
+    const text = data.content.map(b => b.text || '').join('');
+
+    // Detect urgency
+    const tu = text.toUpperCase();
+    let urgency = 'green';
+    if (tu.includes('VERMELL') || tu.includes('CRÍTIC') || tu.includes('URGENT')) urgency = 'red';
+    else if (tu.includes('GROGA') || tu.includes('MODERAD') || tu.includes('ATENCIÓ')) urgency = 'yellow';
+
+    const urgLabel = { green:'🟢 Preventiu', yellow:'🟡 Atenció moderada', red:'🔴 Prioritat alta' };
+    const urgCls = { green:'ug', yellow:'uy', red:'ur' };
+    const cfg = modCfg[currentMod];
+    const dateLabel = new Date().toLocaleString('ca-ES');
+    const fmt = text.replace(/(\d+\.\s+[A-ZÁÈÉÍÓÚÜÀÈÌÒÙÇ\s\/·'']+:)/g, '<strong>$1</strong>');
+
+    ra.innerHTML = `
+      <div class="result-card">
+        <div class="result-header">
+          <span style="font-size:1.1rem">${cfg.icon}</span>
+          <span class="rbadge">${cfg.label}</span>
+          <span class="ubadge ${urgCls[urgency]}">${urgLabel[urgency]}</span>
+          ${age ? `<span style="font-size:9px;color:var(--text3)">${age} anys</span>` : ''}
+        </div>
+        <div class="result-body">${fmt}</div>
+        <div class="result-actions">
+          <button class="raction" onclick="copyResult()">📋 Copiar</button>
+          <button class="raction" onclick="shareWA()">📱 WhatsApp</button>
+          <button class="raction" onclick="clearResult()">← Nova</button>
+        </div>
+      </div>
+      <div class="disclaimer">⚠ Anàlisi orientativa. No substitueix el diagnòstic mèdic professional.</div>`;
+
+    // Save session
+    const s = { id:'S'+Date.now(), patientId:activePtId, date:new Date().toISOString(), dateLabel, mods:[currentMod], results:[{mod:currentMod, text, imgSrc:capturedImage.src}], urgency, patientAge:age };
+    sessions.unshift(s);
+    localStorage.setItem('hol_sess', JSON.stringify(sessions));
+    updateStats(); renderHomePts();
+
+  } catch(err) {
+    ra.innerHTML = `<div class="result-card"><div class="result-body" style="color:var(--danger)">Error: ${err.message}</div></div>`;
+  }
+
+  btn.disabled = false; sp.classList.remove('on');
+  txt.textContent = capturedImage ? `Analitzar · ${modCfg[currentMod].label}` : 'Fes una foto per analitzar';
+  ra.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function copyResult() {
+  const t = document.querySelector('.result-body')?.innerText || '';
+  navigator.clipboard?.writeText(t).then(() => showToast('Copiat!')).catch(() => showToast('Copia manualment'));
+}
+function shareWA() {
+  const t = (document.querySelector('.result-body')?.innerText || '').substring(0, 800) + '...';
+  window.open('https://wa.me/?text=' + encodeURIComponent('🌿 Diagnòstic Holístic\n\n' + t));
+}
+function clearResult() {
+  capturedImage = null;
+  document.getElementById('resultArea').innerHTML = '';
+  renderCamZone();
+  checkBtn();
+  window.scrollTo(0, 0);
+}
+
+function showToast(msg) {
+  const t = document.createElement('div');
+  t.textContent = msg;
+  t.style.cssText = 'position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:var(--accent);color:var(--bg);padding:8px 16px;border-radius:999px;font-size:12px;z-index:999;animation:fadeUp .3s ease';
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 2000);
+}
+
+// ── PATIENTS ──────────────────────────────────────────────
+function openModal() { document.getElementById('modalOv').classList.add('open'); }
+function closeModal() {
+  document.getElementById('modalOv').classList.remove('open');
+  ['pNom','pCog','pEdat','pSexe','pMotiu','pAntec'].forEach(id => document.getElementById(id).value = '');
+}
+
+function savePatient() {
+  const nom = document.getElementById('pNom').value.trim();
+  if (!nom) { alert('El nom és obligatori'); return; }
+  const p = { id:'P'+Date.now(), nom, cog:document.getElementById('pCog').value.trim(), edat:document.getElementById('pEdat').value, sexe:document.getElementById('pSexe').value, motiu:document.getElementById('pMotiu').value.trim(), antec:document.getElementById('pAntec').value.trim(), created:new Date().toISOString() };
+  patients.unshift(p);
+  localStorage.setItem('hol_pts', JSON.stringify(patients));
+  closeModal(); updateStats(); renderPatients(); renderHomePts(); renderDiagPts();
+}
+
+function renderPatients() {
+  const el = document.getElementById('ptList');
+  if (!patients.length) { el.innerHTML = '<div class="empty"><div class="ei">♦</div><p>Cap pacient registrat.<br>Crea el primer pacient.</p></div>'; return; }
+  el.innerHTML = patients.map(p => {
+    const ptS = sessions.filter(s => s.patientId === p.id);
+    const urg = ptS[0]?.urgency || 'green';
+    const dotColor = { green:'var(--green)', yellow:'var(--yellow)', red:'var(--red)' }[urg];
+    const sx = { H:'♂', D:'♀', A:'◈' }[p.sexe] || '◈';
+    return `<div class="pt-card" onclick="openPtDetail('${p.id}')">
+      <div class="pt-avatar">${sx}</div>
+      <div class="pt-info">
+        <div class="pt-name">${p.nom} ${p.cog}</div>
+        <div class="pt-meta">${p.edat ? p.edat + ' anys · ' : ''}${ptS.length} sessió${ptS.length !== 1 ? 'ns' : ''}${p.motiu ? ' · ' + p.motiu : ''}</div>
+      </div>
+      <div class="pt-dot" style="background:${dotColor}"></div>
+    </div>`;
+  }).join('');
+}
+
+function renderHomePts() {
+  const el = document.getElementById('homePts');
+  if (!patients.length) { el.innerHTML = '<span style="font-size:11px;color:var(--text3)">Cap pacient. <span style="color:var(--accent2);cursor:pointer" onclick="openModal()">Crear →</span></span>'; return; }
+  el.innerHTML = patients.slice(0,6).map(p => `
+    <div class="pt-pill ${activePtId===p.id?'on':''}" onclick="selectPt('${p.id}')">
+      <div class="pa">${{H:'♂',D:'♀',A:'◈'}[p.sexe]||'◈'}</div>
+      <span>${p.nom}</span>
+      ${p.edat ? `<span style="font-size:9px;color:var(--text3)">${p.edat}a</span>` : ''}
+    </div>`).join('');
+}
+
+function renderDiagPts() {
+  const el = document.getElementById('diagPts');
+  if (!patients.length) { el.innerHTML = '<span style="font-size:11px;color:var(--text3)">Cap pacient. <span style="color:var(--accent2);cursor:pointer" onclick="openModal()">Crear →</span></span>'; return; }
+  el.innerHTML = '<div class="pt-scroll" style="display:flex;gap:8px;overflow-x:auto">' +
+    patients.slice(0,8).map(p => `
+      <div class="pt-pill ${activePtId===p.id?'on':''}" id="dp-${p.id}" onclick="selectPt('${p.id}')">
+        <div class="pa">${{H:'♂',D:'♀',A:'◈'}[p.sexe]||'◈'}</div>
+        <span>${p.nom}</span>
+        ${p.edat?`<span style="font-size:9px;color:var(--text3)">${p.edat}a</span>`:''}
+      </div>`).join('') + '</div>';
+}
+
+function selectPt(id) {
+  activePtId = id;
+  const p = patients.find(x => x.id === id);
+  document.getElementById('topPt').textContent = p.nom + ' ' + p.cog;
+  document.getElementById('topPt').style.display = 'block';
+  renderHomePts(); renderDiagPts();
+  const g = getAgeGroup(p.edat);
+  const alert = document.getElementById('ageAlert');
+  if (g) {
+    const info = ageInfo[g];
+    alert.className = `age-alert ${info.cls}`;
+    alert.innerHTML = `<strong>${info.label}</strong><br>${info.note}`;
+    alert.style.display = 'block';
+  } else { alert.style.display = 'none'; }
+}
+
+function openPtDetail(id) {
+  detailPtId = id;
+  const p = patients.find(x => x.id === id);
+  if (!p) return;
+  document.getElementById('topTitle').textContent = p.nom + ' ' + p.cog;
+  const sx = { H:'♂', D:'♀', A:'◈' }[p.sexe] || '◈';
+  document.getElementById('ptDetailHeader').innerHTML = `
+    <div class="pt-detail-avatar">${sx}</div>
+    <div><div class="pt-detail-name">${p.nom} ${p.cog}</div>
+    <div class="pt-detail-sub">${p.edat?p.edat+' anys · ':''}${p.sexe==='H'?'Home':p.sexe==='D'?'Dona':'Altres'}</div></div>`;
+  const g = getAgeGroup(p.edat);
+  document.getElementById('ptDetailAge').innerHTML = g ? `<div class="age-alert ${ageInfo[g].cls}" style="margin-bottom:12px"><strong>${ageInfo[g].label}</strong><br>${ageInfo[g].note}</div>` : '';
+  document.getElementById('ptDetailInfo').innerHTML = `
+    <div class="info-grid">
+      <div class="info-item"><div class="info-label">Edat</div><div class="info-value">${p.edat?p.edat+' anys':'—'}</div></div>
+      <div class="info-item"><div class="info-label">Sessions</div><div class="info-value">${sessions.filter(s=>s.patientId===id).length}</div></div>
+      <div class="info-item full"><div class="info-label">Motiu</div><div class="info-value">${p.motiu||'—'}</div></div>
+      <div class="info-item full"><div class="info-label">Antecedents</div><div class="info-value">${p.antec||'—'}</div></div>
+    </div>`;
+  document.getElementById('ptNewSess').onclick = () => { selectPt(id); goPage('diagnosis'); };
+  document.getElementById('ptDeleteBtn').onclick = () => deletePt(id);
+  renderSessions(id, sortMode);
+  document.querySelectorAll('.page').forEach(pp => pp.classList.remove('on'));
+  document.getElementById('page-ptdetail').classList.add('on');
+}
+
+function deletePt(id) {
+  if (!confirm('Eliminar el pacient i totes les seves sessions?')) return;
+  patients = patients.filter(p => p.id !== id);
+  sessions = sessions.filter(s => s.patientId !== id);
+  localStorage.setItem('hol_pts', JSON.stringify(patients));
+  localStorage.setItem('hol_sess', JSON.stringify(sessions));
+  if (activePtId === id) { activePtId = null; document.getElementById('topPt').style.display = 'none'; }
+  goPage('patients'); updateStats(); renderHomePts(); renderDiagPts();
+}
+
+function sortSess(mode, el) {
+  sortMode = mode;
+  document.querySelectorAll('.sort-tab').forEach(b => b.classList.remove('on'));
+  el.classList.add('on');
+  if (detailPtId) renderSessions(detailPtId, mode);
+}
+
+function renderSessions(ptId, mode) {
+  const el = document.getElementById('sessList');
+  let ptSess = sessions.filter(s => s.patientId === ptId);
+  if (!ptSess.length) { el.innerHTML = '<div class="empty" style="padding:20px"><div class="ei">◈</div><p>Sense sessions.</p></div>'; return; }
+  if (mode === 'date') ptSess.sort((a,b) => new Date(b.date)-new Date(a.date));
+  else if (mode === 'mod') ptSess.sort((a,b) => (a.mods||[]).join().localeCompare((b.mods||[]).join()));
+  else ptSess.sort((a,b) => ({red:0,yellow:1,green:2}[a.urgency]||2)-({red:0,yellow:1,green:2}[b.urgency]||2));
+  const urgCls = { green:'ug', yellow:'uy', red:'ur' };
+  const urgLabel = { green:'🟢', yellow:'🟡', red:'🔴' };
+  el.innerHTML = ptSess.map((s,i) => `
+    <div class="sess-item">
+      <div class="sess-header" onclick="toggleSess('sb${i}')">
+        <span class="ubadge ${urgCls[s.urgency||'green']}">${urgLabel[s.urgency||'green']}</span>
+        <span class="sess-date">${s.dateLabel||new Date(s.date).toLocaleString('ca-ES')}</span>
+        <div class="sess-mods">${(s.mods||[]).map(m=>modCfg[m]?.icon||m).join('')}</div>
+        <span style="color:var(--text3);font-size:10px">▾</span>
+      </div>
+      <div class="sess-body" id="sb${i}">
+        ${(s.results||[]).map(r => `
+          ${r.imgSrc?`<img src="${r.imgSrc}" style="width:100%;max-height:180px;object-fit:cover;border-radius:8px;margin-top:10px">`:``}
+          <div class="sess-body-text">${r.text.substring(0,400)}…</div>`).join('')}
+        <div class="sess-actions">
+          <button class="raction" onclick="viewSess('${s.id}')">Veure complet</button>
+          <button class="raction" style="color:var(--danger)" onclick="deleteSess('${s.id}')">Eliminar</button>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+function toggleSess(id) { document.getElementById(id)?.classList.toggle('open'); }
+
+function viewSess(id) {
+  const s = sessions.find(x => x.id === id);
+  if (!s) return;
+  goPage('diagnosis');
+  const ra = document.getElementById('resultArea');
+  ra.innerHTML = (s.results||[]).map(r => {
+    const cfg = modCfg[r.mod];
+    const fmt = r.text.replace(/(\d+\.\s+[A-ZÁÈÉÍÓÚÜÀÈÌÒÙÇ\s\/·'']+:)/g,'<strong>$1</strong>');
+    return `<div class="result-card">
+      <div class="result-header"><span>${cfg?.icon||'◉'}</span><span class="rbadge">${cfg?.label||r.mod}</span></div>
+      ${r.imgSrc?`<img src="${r.imgSrc}" style="width:100%;max-height:200px;object-fit:cover;border-radius:8px;margin-bottom:10px">`:''}
+      <div class="result-body">${fmt}</div>
+    </div>`;
+  }).join('');
+}
+
+function deleteSess(id) {
+  if (!confirm('Eliminar sessió?')) return;
+  sessions = sessions.filter(s => s.id !== id);
+  localStorage.setItem('hol_sess', JSON.stringify(sessions));
+  if (detailPtId) renderSessions(detailPtId, sortMode);
+  updateStats();
+}
+
+// ── STATS ─────────────────────────────────────────────────
+function updateStats() {
+  document.getElementById('sP').textContent = patients.length;
+  document.getElementById('sS').textContent = sessions.length;
+  const today = new Date().toDateString();
+  document.getElementById('sT').textContent = sessions.filter(s => new Date(s.date).toDateString() === today).length;
+}
+
+// ── INIT ──────────────────────────────────────────────────
+updateStats(); renderHomePts(); renderDiagPts(); renderCamZone();
+</script>
+</body>
+</html>
