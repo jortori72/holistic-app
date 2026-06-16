@@ -5,816 +5,891 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="JTorres Holístic">
-<meta name="theme-color" content="#1a0800">
+<meta name="apple-mobile-web-app-title" content="Holístic">
+<meta name="theme-color" content="#120700">
 <title>Jordi Torres · Diagnòstic Holístic</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-:root {
-  --gold:#E1AF00; --gold2:#F5C842; --gold3:#FFF3C4;
-  --red:#960000;  --red2:#C41200; --red3:#FFE0E0;
-  --dark:#120700; --dark2:#1E0E02; --dark3:#2A1608;
-  --dark4:#3A2010; --dark5:#4A2E1A;
-  --b1:rgba(225,175,0,.14); --b2:rgba(225,175,0,.30); --b3:rgba(225,175,0,.55);
-  --t1:#FFF5DC; --t2:#D4A86A; --t3:#8A6540;
-  --sg:#4CAF50; --sy:#FFC107; --sr:#F44336;
-  --safe:env(safe-area-inset-bottom,0px); --r:16px;
-}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-html,body{height:100%;background:var(--dark);color:var(--t1);font-family:'DM Sans',sans-serif;font-size:14px;overflow:hidden}
+:root{
+  --or:#E1AF00;--or2:#F5C842;--or3:#FFF8DC;
+  --red:#960000;--red2:#C41200;
+  --dark:#120700;--dark2:#1E0E02;--dark3:#2A1608;--dark4:#3A2010;
+  --t1:#FFF5DC;--t2:#D4A86A;--t3:#8A6540;
+  --safe:env(safe-area-inset-bottom,0px);
+}
+html,body{height:100%;background:var(--dark);color:var(--t1);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;overflow:hidden}
 .app{display:flex;flex-direction:column;height:100vh;height:100dvh}
 
 /* TOPBAR */
 .topbar{
-  background:linear-gradient(180deg,var(--dark2) 0%,var(--dark3) 100%);
-  border-bottom:1px solid var(--b1);
-  padding:12px 16px;
-  padding-top:max(14px,env(safe-area-inset-top));
+  background:var(--dark2);
+  border-bottom:2px solid var(--or);
+  padding:10px 16px;
+  padding-top:max(12px,env(safe-area-inset-top));
   display:flex;align-items:center;gap:10px;
-  flex-shrink:0;position:relative;z-index:20;
+  flex-shrink:0;
 }
-.topbar::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;
-  background:linear-gradient(90deg,transparent,var(--gold),transparent)}
-.tb-brand{display:flex;align-items:center;gap:9px;flex:1}
-.tb-logo{width:36px;height:36px;border-radius:10px;
-  background:linear-gradient(135deg,var(--gold),var(--red));
+.tb-logo{font-size:1.6rem}
+.tb-name{font-size:1rem;font-weight:700;color:var(--or)}
+.tb-sub{font-size:10px;color:var(--t3);letter-spacing:.1em}
+
+/* SCREENS */
+.screen{display:none;flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.screen.on{display:flex;flex-direction:column}
+
+/* ═══════════ SCREEN 1: PACIENT ═══════════ */
+.s1{padding:20px 16px;gap:14px}
+.s1-title{font-size:1.3rem;font-weight:700;color:var(--or);margin-bottom:4px}
+.s1-sub{font-size:13px;color:var(--t3);margin-bottom:8px}
+.inp-group{display:flex;flex-direction:column;gap:6px}
+.inp-label{font-size:12px;color:var(--t2);font-weight:600;letter-spacing:.08em;text-transform:uppercase}
+.inp{
+  background:var(--dark3);border:2px solid rgba(225,175,0,.25);
+  border-radius:14px;padding:14px 16px;color:var(--t1);
+  font-size:16px;font-family:inherit;width:100%;
+  -webkit-appearance:none;transition:border .2s;
+}
+.inp:focus{outline:none;border-color:var(--or)}
+.inp-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.btn-start{
+  margin-top:8px;padding:18px;border:none;border-radius:16px;
+  background:linear-gradient(135deg,var(--or),var(--red));
+  color:var(--dark);font-size:17px;font-weight:800;
+  letter-spacing:.05em;cursor:pointer;width:100%;
+  box-shadow:0 6px 24px rgba(225,175,0,.3);
+}
+.btn-start:active{transform:scale(.98)}
+.pts-list{display:flex;flex-direction:column;gap:8px}
+.pt-item{
+  background:var(--dark3);border:1.5px solid rgba(225,175,0,.2);
+  border-radius:14px;padding:14px 16px;
+  display:flex;align-items:center;gap:12px;cursor:pointer;
+}
+.pt-item:active{border-color:var(--or);background:var(--dark4)}
+.pt-av{width:42px;height:42px;border-radius:50%;
+  background:linear-gradient(135deg,var(--or),var(--red));
   display:flex;align-items:center;justify-content:center;
-  font-size:1.2rem;box-shadow:0 3px 10px rgba(225,175,0,.35)}
-.tb-name{font-family:'Playfair Display',serif;font-size:1rem;font-weight:500;color:var(--t1)}
-.tb-sub{font-size:10px;color:var(--gold);letter-spacing:.14em;text-transform:uppercase;margin-top:1px}
-.tb-pt{font-size:11px;color:var(--gold);background:rgba(225,175,0,.12);
-  border:1px solid var(--b2);padding:4px 11px;border-radius:999px;
-  max-width:120px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  font-size:1.1rem;flex-shrink:0}
+.pt-nom{font-size:15px;font-weight:700;color:var(--t1)}
+.pt-meta{font-size:12px;color:var(--t3);margin-top:2px}
+.pt-n-sess{font-size:11px;background:rgba(225,175,0,.15);
+  border:1px solid rgba(225,175,0,.3);color:var(--or);
+  padding:3px 8px;border-radius:999px;margin-left:auto;white-space:nowrap}
 
-/* CONTENT */
-.content{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
-.page{display:none;padding:14px;padding-bottom:calc(96px + var(--safe))}
-.page.on{display:block;animation:fadeUp .22s ease}
-@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
-
-/* BOTTOM NAV */
-.bnav{
-  background:var(--dark2);border-top:1px solid var(--b1);
-  display:flex;align-items:stretch;
-  padding-bottom:max(10px,var(--safe));
-  flex-shrink:0;position:relative;z-index:20;
+/* ═══════════ SCREEN 2: SESSIÓ ═══════════ */
+.s2{padding:0}
+.s2-header{
+  background:var(--dark2);padding:14px 16px 12px;
+  border-bottom:1px solid rgba(225,175,0,.2);
+  display:flex;align-items:center;gap:10px;
 }
-.bnav::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;
-  background:linear-gradient(90deg,transparent,var(--gold),transparent)}
-.nb{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
-  gap:3px;padding:9px 4px;border:none;background:transparent;
-  color:var(--t3);font-size:10px;letter-spacing:.06em;text-transform:uppercase;
-  font-family:'DM Sans',sans-serif;cursor:pointer;transition:all .2s}
-.nb.on{color:var(--gold)}
-.nb .ni{font-size:1.4rem;line-height:1;transition:transform .2s}
-.nb.on .ni{transform:scale(1.15)}
-.nb-main{flex:1.6;margin:7px 10px;
-  background:linear-gradient(135deg,var(--gold) 0%,var(--red) 100%);
-  border-radius:14px;color:var(--dark)!important;
-  font-weight:700;font-size:11px;letter-spacing:.1em;
-  box-shadow:0 5px 20px rgba(225,175,0,.28)}
-.nb-main:active{transform:scale(.97)}
-.nb-main .ni{font-size:1.5rem}
+.s2-back{font-size:1.2rem;cursor:pointer;color:var(--or);padding:4px 8px 4px 0}
+.s2-pt{flex:1}
+.s2-pt-nom{font-size:15px;font-weight:700;color:var(--t1)}
+.s2-pt-info{font-size:11px;color:var(--t3);margin-top:2px}
+.s2-body{padding:14px 16px;display:flex;flex-direction:column;gap:12px;
+  padding-bottom:calc(100px + var(--safe))}
 
-/* CARDS */
-.card{background:var(--dark2);border:1px solid var(--b1);
-  border-radius:var(--r);padding:16px;margin-bottom:12px;position:relative;overflow:hidden}
-.card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;
-  background:linear-gradient(90deg,var(--gold),var(--red),var(--gold));opacity:0;transition:.3s}
-.card:hover::before{opacity:1}
-.card-title{font-size:10px;letter-spacing:.2em;text-transform:uppercase;
-  color:var(--t3);margin-bottom:14px;display:flex;align-items:center;gap:8px}
-.card-title::after{content:'';flex:1;height:1px;background:var(--b1)}
-
-/* STATS */
-.stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:12px}
-.stat{background:var(--dark3);border:1px solid var(--b1);border-radius:14px;
-  padding:14px 8px;text-align:center;position:relative;overflow:hidden}
-.stat::after{content:'';position:absolute;bottom:0;left:15%;right:15%;height:1px;
-  background:linear-gradient(90deg,transparent,var(--gold),transparent)}
-.stat-num{font-family:'Playfair Display',serif;font-size:2.2rem;font-weight:400;
-  background:linear-gradient(135deg,var(--gold2),var(--gold));
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1}
-.stat-lbl{font-size:10px;color:var(--t3);letter-spacing:.1em;text-transform:uppercase;margin-top:4px}
-
-/* PATIENT PILLS */
-.pt-scroll{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px}
-.pt-scroll::-webkit-scrollbar{display:none}
-.pt-pill{flex-shrink:0;display:flex;align-items:center;gap:7px;
-  background:var(--dark3);border:1px solid var(--b1);border-radius:999px;
-  padding:7px 14px;cursor:pointer;font-size:12px;color:var(--t2);
-  white-space:nowrap;transition:all .2s}
-.pt-pill.on{border-color:var(--gold);background:rgba(225,175,0,.12);color:var(--gold2);
-  box-shadow:0 0 14px rgba(225,175,0,.18)}
-.pt-pill .pa{width:22px;height:22px;border-radius:50%;
-  background:linear-gradient(135deg,var(--dark4),var(--dark5));
-  border:1px solid var(--b2);display:flex;align-items:center;justify-content:center;font-size:.85rem}
-
-/* ═══════════════════════════════════════════
-   MÈTODES — DISSENY GRAN I VISUAL
-═══════════════════════════════════════════ */
-.method-section{margin-bottom:14px}
-.method-section-title{
-  font-size:10px;letter-spacing:.2em;text-transform:uppercase;
-  color:var(--t3);margin-bottom:10px;display:flex;align-items:center;gap:8px}
-.method-section-title::after{content:'';flex:1;height:1px;background:var(--b1)}
-
-/* Grid 2 columnes, targetes grans */
-.method-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
-
-.method-btn{
-  background:var(--dark3);
-  border:2px solid var(--b1);
-  border-radius:16px;
-  padding:16px 10px 14px;
-  cursor:pointer;
-  display:flex;flex-direction:column;align-items:center;gap:8px;
-  transition:all .22s;
-  position:relative;overflow:hidden;
-  min-height:90px;
+/* MÈTODE CARD — EL COR DE L'APP */
+.met-card{
+  background:var(--dark2);
+  border:2px solid rgba(225,175,0,.2);
+  border-radius:20px;overflow:hidden;
+  transition:border .2s;
 }
-.method-btn::before{
-  content:'';position:absolute;inset:0;
-  background:linear-gradient(135deg,rgba(225,175,0,.07),rgba(150,0,0,.07));
-  opacity:0;transition:.22s}
-.method-btn.on{
-  border-color:var(--gold);
-  background:var(--dark4);
-  box-shadow:0 0 20px rgba(225,175,0,.18),inset 0 0 20px rgba(225,175,0,.04);
+.met-card.done{border-color:var(--or)}
+.met-card.active{border-color:var(--or2);box-shadow:0 0 20px rgba(225,175,0,.2)}
+
+.met-header{
+  display:flex;align-items:center;gap:12px;
+  padding:16px;cursor:pointer;
 }
-.method-btn.on::before{opacity:1}
+.met-icon{font-size:2rem;width:52px;height:52px;
+  background:var(--dark3);border-radius:14px;
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;transition:background .2s}
+.met-card.done .met-icon{background:rgba(225,175,0,.15)}
+.met-card.active .met-icon{background:rgba(225,175,0,.2)}
+.met-info{flex:1}
+.met-nom{font-size:16px;font-weight:700;color:var(--t1)}
+.met-guia{font-size:12px;color:var(--t3);margin-top:3px;line-height:1.5}
+.met-status{flex-shrink:0}
+.met-check{width:30px;height:30px;border-radius:50%;
+  background:var(--or);display:flex;align-items:center;
+  justify-content:center;font-size:14px;display:none}
+.met-card.done .met-check{display:flex}
+.met-num{width:30px;height:30px;border-radius:50%;
+  border:2px solid rgba(225,175,0,.3);
+  display:flex;align-items:center;justify-content:center;
+  font-size:13px;color:var(--t3);font-weight:700}
+.met-card.done .met-num,.met-card.active .met-num{display:none}
 
-/* Icona gran */
-.method-btn .mi{
-  font-size:2rem;
-  line-height:1;
-  position:relative;
-  filter:drop-shadow(0 2px 4px rgba(0,0,0,.4));
-  transition:transform .22s;
+.met-body{display:none;padding:0 16px 16px}
+.met-card.active .met-body{display:block}
+
+/* ZONA CÀMERA */
+.cam-zona{
+  border:2px dashed rgba(225,175,0,.35);
+  border-radius:14px;background:var(--dark3);
+  min-height:160px;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:8px;
+  cursor:pointer;margin-bottom:10px;overflow:hidden;
+  position:relative;transition:border .2s;
 }
-.method-btn.on .mi{transform:scale(1.12)}
+.cam-zona.has-img{border-style:solid;border-color:var(--or);min-height:0}
+.cam-zona:active{border-color:var(--or)}
+.cam-emoji{font-size:2.2rem;opacity:.4}
+.cam-txt{font-size:13px;color:var(--t3);text-align:center;line-height:1.6}
+.cam-txt span{color:var(--or);font-size:11px}
+.cam-prev{width:100%;max-height:220px;object-fit:cover;display:block;border-radius:12px}
+.cam-del{position:absolute;top:8px;right:8px;
+  background:rgba(18,7,0,.9);border:1px solid rgba(225,175,0,.4);
+  color:var(--t2);border-radius:8px;padding:5px 10px;
+  font-size:12px;cursor:pointer;z-index:2}
 
-/* Label gran i llegible */
-.method-btn .ml{
-  font-size:13px;
-  font-weight:600;
-  color:var(--t2);
-  letter-spacing:.04em;
-  text-align:center;
-  line-height:1.2;
-  position:relative;
-  transition:color .22s;
-}
-.method-btn.on .ml{color:var(--gold2)}
-
-/* Indicador actiu */
-.method-btn.on::after{
-  content:'✓';
-  position:absolute;top:8px;right:10px;
-  font-size:12px;color:var(--gold);
-  font-weight:700;
-}
-
-/* GUIDE */
-.guide{
-  background:var(--dark3);
-  border-left:4px solid var(--gold);
-  border-radius:0 12px 12px 0;
-  padding:11px 14px;margin-bottom:12px;
-  font-size:13px;color:var(--t2);line-height:1.7;
-}
-
-/* AGE ALERT */
-.age-alert{border-radius:12px;padding:10px 14px;margin-bottom:12px;font-size:12px;line-height:1.7}
-.age-peds{background:rgba(33,150,243,.08);border:1px solid rgba(33,150,243,.25);color:#64B5F6}
-.age-adult{background:rgba(76,175,80,.08);border:1px solid rgba(76,175,80,.25);color:#81C784}
-.age-mature{background:rgba(255,193,7,.08);border:1px solid rgba(255,193,7,.25);color:#FFD54F}
-.age-senior{background:rgba(244,67,54,.08);border:1px solid rgba(244,67,54,.25);color:#EF9A9A}
-
-/* CÀMERA */
-.cam-zone{
-  border:2px dashed var(--b2);border-radius:var(--r);
-  background:var(--dark2);margin-bottom:12px;
-  overflow:hidden;position:relative;cursor:pointer;
-  min-height:190px;display:flex;flex-direction:column;
-  align-items:center;justify-content:center;gap:10px;transition:all .2s;
-}
-.cam-zone:active,.cam-zone.has{border-style:solid}
-.cam-zone:active{border-color:var(--gold);background:rgba(225,175,0,.05)}
-.cam-icon{font-size:2.4rem;opacity:.3}
-.cam-lbl{font-size:13px;color:var(--t3);text-align:center;line-height:1.7}
-.cam-lbl span{color:var(--gold);font-size:11px}
-.cam-preview{width:100%;max-height:240px;object-fit:cover;display:block}
-.cam-remove{position:absolute;top:10px;right:10px;
-  background:rgba(18,7,0,.88);backdrop-filter:blur(8px);
-  border:1px solid var(--b2);color:var(--t2);border-radius:9px;
-  padding:5px 12px;font-size:12px;cursor:pointer;z-index:2;font-family:'DM Sans',sans-serif}
-
-/* BOTONS CÀMERA */
-.cam-btns{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+.cam-btns{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px}
 .cam-btn{
-  padding:12px 6px;border:1px solid var(--b2);border-radius:12px;
-  background:var(--dark3);color:var(--t2);font-family:'DM Sans',sans-serif;
-  font-size:12px;font-weight:500;cursor:pointer;
-  display:flex;flex-direction:column;align-items:center;gap:4px;transition:all .2s;
+  padding:12px 6px;border:1.5px solid rgba(225,175,0,.25);
+  border-radius:12px;background:var(--dark3);color:var(--t2);
+  font-size:12px;font-weight:600;cursor:pointer;
+  display:flex;flex-direction:column;align-items:center;gap:4px;
+  font-family:inherit;
 }
-.cam-btn:active{border-color:var(--gold);color:var(--gold2);background:rgba(225,175,0,.1)}
-.cam-btn .cb-i{font-size:1.4rem}
+.cam-btn:active{border-color:var(--or);color:var(--or2);background:var(--dark4)}
+.cam-btn-icon{font-size:1.4rem}
 
-/* BOTÓ ANALITZAR */
-.analyze-btn{
-  width:100%;padding:15px;border:none;border-radius:var(--r);
-  background:linear-gradient(135deg,var(--gold) 0%,var(--red) 100%);
-  color:var(--dark);font-family:'DM Sans',sans-serif;
-  font-size:15px;font-weight:700;letter-spacing:.06em;
-  cursor:pointer;display:flex;align-items:center;justify-content:center;gap:9px;
-  transition:all .2s;margin-bottom:12px;
-  box-shadow:0 5px 22px rgba(225,175,0,.25);
+.btn-analitza{
+  width:100%;padding:15px;border:none;border-radius:14px;
+  background:linear-gradient(135deg,var(--or),var(--red));
+  color:var(--dark);font-size:15px;font-weight:800;
+  cursor:pointer;display:flex;align-items:center;
+  justify-content:center;gap:8px;font-family:inherit;
+  box-shadow:0 4px 18px rgba(225,175,0,.25);
 }
-.analyze-btn:active{transform:scale(.99);box-shadow:0 2px 10px rgba(225,175,0,.15)}
-.analyze-btn:disabled{opacity:.3;cursor:not-allowed;box-shadow:none}
+.btn-analitza:disabled{opacity:.35;cursor:not-allowed;box-shadow:none}
+.btn-analitza:active:not(:disabled){transform:scale(.99)}
 
-/* ANALÍTICA */
-.analytics-zone{
-  background:var(--dark3);
-  border:2px dashed rgba(150,0,0,.45);
-  border-radius:var(--r);padding:14px;margin-bottom:12px;
-  cursor:pointer;transition:all .2s;
+/* RESULTAT */
+.resultat{
+  background:var(--dark3);border:1.5px solid rgba(225,175,0,.3);
+  border-radius:14px;padding:14px;margin-top:10px;
+  font-size:13px;color:var(--t2);line-height:1.8;white-space:pre-wrap;
 }
-.analytics-zone:active,.analytics-zone.loaded{border-color:var(--red2);border-style:solid}
-.analytics-zone.loaded{background:rgba(150,0,0,.08)}
-.az-header{display:flex;align-items:center;gap:11px;margin-bottom:7px}
-.az-icon{width:40px;height:40px;border-radius:12px;
-  background:linear-gradient(135deg,var(--red),var(--red2));
-  display:flex;align-items:center;justify-content:center;
-  font-size:1.2rem;flex-shrink:0;box-shadow:0 3px 10px rgba(150,0,0,.35)}
-.az-title{font-size:14px;font-weight:700;color:var(--t1)}
-.az-sub{font-size:11px;color:var(--t3);margin-top:2px}
-.az-status{margin-left:auto;font-size:11px;color:var(--red2)}
-.az-hint{font-size:11px;color:var(--t3);line-height:1.7}
-
-/* BOTÓ CREUAMENT */
-.cross-btn{
-  width:100%;padding:14px;border:2px solid var(--red2);border-radius:var(--r);
-  background:rgba(150,0,0,.12);color:#EF9A9A;
-  font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;
-  cursor:pointer;display:flex;align-items:center;justify-content:center;
-  gap:8px;transition:all .2s;margin-bottom:12px;
-}
-.cross-btn:active{background:rgba(150,0,0,.22)}
-.cross-btn:disabled{opacity:.3;cursor:not-allowed}
+.resultat strong{color:var(--or);font-size:11px;letter-spacing:.12em;
+  text-transform:uppercase;display:block;margin-top:.8rem;margin-bottom:.1rem}
+.urg-badge{display:inline-flex;align-items:center;gap:5px;
+  padding:4px 10px;border-radius:999px;font-size:11px;font-weight:700;margin-bottom:8px}
+.urg-g{background:rgba(76,175,80,.15);border:1px solid rgba(76,175,80,.4);color:#81C784}
+.urg-y{background:rgba(255,193,7,.15);border:1px solid rgba(255,193,7,.4);color:#FFD54F}
+.urg-r{background:rgba(244,67,54,.15);border:1px solid rgba(244,67,54,.4);color:#EF9A9A}
 
 /* SPINNER */
-.sp{width:16px;height:16px;border:2px solid rgba(18,7,0,.3);
+.spin{width:18px;height:18px;border:2.5px solid rgba(18,7,0,.3);
   border-top-color:var(--dark);border-radius:50%;
-  animation:spin .7s linear infinite;display:none}
-.sp.on{display:inline-block}
+  animation:spin .7s linear infinite;display:none;flex-shrink:0}
+.spin.on{display:block}
 @keyframes spin{to{transform:rotate(360deg)}}
 
-/* RESULTATS */
-.result-card{
-  background:var(--dark2);border:1px solid var(--b2);
-  border-radius:var(--r);padding:16px;margin-bottom:12px;
-  animation:fadeUp .3s ease;position:relative;overflow:hidden;
+/* BOTTOM BAR */
+.bottom-bar{
+  position:fixed;bottom:0;left:0;right:0;
+  background:var(--dark2);
+  border-top:2px solid var(--or);
+  padding:12px 16px;
+  padding-bottom:max(14px,var(--safe));
+  z-index:100;
 }
-.result-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;
-  background:linear-gradient(90deg,var(--gold),var(--red))}
-.cross-card{border-color:rgba(150,0,0,.55)!important}
-.cross-card::before{background:linear-gradient(90deg,var(--red),var(--gold))!important}
-.r-header{display:flex;align-items:center;gap:8px;margin-bottom:12px;
-  padding-bottom:10px;border-bottom:1px solid var(--b1);flex-wrap:wrap}
-.rbadge{font-size:10px;letter-spacing:.14em;text-transform:uppercase;
-  background:rgba(225,175,0,.13);border:1px solid var(--b2);
-  color:var(--gold);padding:4px 10px;border-radius:5px}
-.cross-badge{font-size:10px;background:rgba(150,0,0,.15);
-  border:1px solid rgba(150,0,0,.4);color:#EF9A9A;
-  padding:4px 10px;border-radius:5px;letter-spacing:.1em}
-.ubadge{font-size:10px;padding:4px 10px;border-radius:5px;font-weight:600}
-.ug{background:rgba(76,175,80,.12);border:1px solid rgba(76,175,80,.35);color:var(--sg)}
-.uy{background:rgba(255,193,7,.12);border:1px solid rgba(255,193,7,.35);color:var(--sy)}
-.ur{background:rgba(244,67,54,.12);border:1px solid rgba(244,67,54,.35);color:var(--sr)}
-.r-body{font-family:'Playfair Display',serif;font-size:1rem;font-weight:400;
-  line-height:1.95;color:var(--t1);white-space:pre-wrap}
-.r-body strong{font-family:'DM Sans',sans-serif;font-size:.72rem;font-weight:700;
-  color:var(--gold);letter-spacing:.14em;text-transform:uppercase;
-  display:block;margin-top:1rem;margin-bottom:.2rem}
-.r-actions{display:flex;gap:7px;margin-top:12px;flex-wrap:wrap}
-.raction{padding:8px 14px;border:1px solid var(--b1);border-radius:9px;
-  background:transparent;color:var(--t2);font-family:'DM Sans',sans-serif;
-  font-size:11px;font-weight:500;cursor:pointer;transition:all .2s}
-.raction:active{border-color:var(--gold);color:var(--gold2);background:rgba(225,175,0,.1)}
+.btn-word{
+  width:100%;padding:16px;border:none;border-radius:16px;
+  background:linear-gradient(135deg,var(--or),var(--red));
+  color:var(--dark);font-size:16px;font-weight:800;
+  cursor:pointer;display:flex;align-items:center;
+  justify-content:center;gap:10px;font-family:inherit;
+  box-shadow:0 6px 22px rgba(225,175,0,.3);letter-spacing:.05em;
+}
+.btn-word:disabled{opacity:.3;cursor:not-allowed;box-shadow:none}
+.btn-word:active:not(:disabled){transform:scale(.99)}
+.word-count{
+  font-size:12px;color:var(--t3);text-align:center;
+  margin-top:7px;letter-spacing:.05em;
+}
+.word-count span{color:var(--or);font-weight:700}
 
-/* PACIENTS */
-.pt-list{display:flex;flex-direction:column;gap:9px}
-.pt-card{background:var(--dark2);border:1px solid var(--b1);border-radius:var(--r);
-  padding:14px;cursor:pointer;display:flex;align-items:center;gap:12px;transition:all .2s}
-.pt-card:active{border-color:var(--b2);background:var(--dark3)}
-.pt-avatar{width:46px;height:46px;border-radius:50%;
-  background:linear-gradient(135deg,var(--gold),var(--red));
-  border:2px solid var(--b2);display:flex;align-items:center;
-  justify-content:center;font-size:1.3rem;flex-shrink:0;
-  box-shadow:0 3px 12px rgba(225,175,0,.2)}
-.pt-info{flex:1;min-width:0}
-.pt-name{font-family:'Playfair Display',serif;font-size:1.05rem;color:var(--t1)}
-.pt-meta{font-size:11px;color:var(--t3);margin-top:3px}
-.pt-urg{width:9px;height:9px;border-radius:50%;flex-shrink:0}
-.pt-sb{font-size:10px;background:var(--dark4);border:1px solid var(--b1);
-  color:var(--t3);padding:3px 8px;border-radius:999px}
+/* SESSIÓ HISTORIAL */
+.hist-card{
+  background:var(--dark3);border:1.5px solid rgba(225,175,0,.2);
+  border-radius:16px;overflow:hidden;margin-bottom:8px;
+}
+.hist-hdr{display:flex;align-items:center;gap:10px;padding:13px 14px;cursor:pointer}
+.hist-date{font-size:12px;color:var(--t2);flex:1}
+.hist-mets{font-size:1rem;display:flex;gap:3px}
+.hist-body{padding:0 14px 14px;border-top:1px solid rgba(225,175,0,.12);display:none}
+.hist-body.open{display:block}
+.hist-res{font-size:12px;color:var(--t2);line-height:1.7;margin-top:10px;white-space:pre-wrap}
 
-/* DETALL */
-.back-btn{display:flex;align-items:center;gap:7px;color:var(--gold);
-  font-size:13px;cursor:pointer;margin-bottom:16px;padding:4px 0;opacity:.85}
-.back-btn:active{opacity:1}
-.detail-hdr{display:flex;align-items:center;gap:14px;margin-bottom:14px;
-  padding:16px;background:var(--dark2);border:1px solid var(--b1);
-  border-radius:var(--r);position:relative;overflow:hidden}
-.detail-hdr::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;
-  background:linear-gradient(90deg,var(--gold),var(--red))}
-.detail-av{width:54px;height:54px;border-radius:50%;
-  background:linear-gradient(135deg,var(--gold),var(--red));
-  display:flex;align-items:center;justify-content:center;font-size:1.5rem;
-  flex-shrink:0;box-shadow:0 5px 18px rgba(225,175,0,.25)}
-.detail-name{font-family:'Playfair Display',serif;font-size:1.2rem;color:var(--t1)}
-.detail-sub{font-size:11px;color:var(--t3);margin-top:3px}
-.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
-.info-item{background:var(--dark3);border:1px solid var(--b1);border-radius:12px;padding:10px 12px}
-.info-item.full{grid-column:1/-1}
-.info-lbl{font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--t3);margin-bottom:4px}
-.info-val{font-size:13px;color:var(--t1)}
-.sort-tabs{display:flex;gap:7px;margin-bottom:12px;overflow-x:auto}
-.sort-tabs::-webkit-scrollbar{display:none}
-.sort-tab{flex-shrink:0;padding:7px 14px;border:1px solid var(--b1);border-radius:999px;
-  font-size:11px;color:var(--t3);cursor:pointer;background:transparent;
-  font-family:'DM Sans',sans-serif;font-weight:500;transition:all .2s}
-.sort-tab.on{border-color:var(--gold);color:var(--gold2);background:rgba(225,175,0,.1)}
-.sess-item{background:var(--dark2);border:1px solid var(--b1);border-radius:14px;margin-bottom:8px;overflow:hidden}
-.sess-hdr{display:flex;align-items:center;gap:8px;padding:12px 14px;cursor:pointer}
-.sess-date{font-size:11px;color:var(--t2);flex:1}
-.sess-mods{display:flex;gap:3px;font-size:.9rem}
-.sess-body{padding:0 14px 14px;border-top:1px solid var(--b1);display:none}
-.sess-body.open{display:block}
-.sess-txt{font-family:'Playfair Display',serif;font-size:.92rem;font-weight:400;
-  line-height:1.85;color:var(--t2);white-space:pre-wrap;margin-top:11px}
-.sess-txt strong{font-family:'DM Sans',sans-serif;font-size:.68rem;color:var(--gold);
-  letter-spacing:.12em;text-transform:uppercase;display:block;margin-top:.8rem}
-.sess-actions{display:flex;gap:7px;margin-top:10px}
-
-/* MODAL */
-.modal-ov{position:fixed;inset:0;background:rgba(10,4,0,.88);
-  backdrop-filter:blur(10px);z-index:200;display:none;align-items:flex-end;justify-content:center}
+/* MODAL WORD */
+.modal-ov{
+  position:fixed;inset:0;background:rgba(10,4,0,.92);
+  backdrop-filter:blur(12px);z-index:300;
+  display:none;align-items:flex-end;justify-content:center
+}
 .modal-ov.open{display:flex}
-.modal{background:var(--dark2);border:1px solid var(--b2);
-  border-radius:22px 22px 0 0;padding:22px 18px calc(22px + var(--safe));
-  width:100%;max-height:88vh;overflow-y:auto;
-  animation:slideUp .3s cubic-bezier(.34,1.56,.64,1)}
+.modal{
+  background:var(--dark2);border:1.5px solid rgba(225,175,0,.3);
+  border-radius:22px 22px 0 0;padding:22px 18px;
+  padding-bottom:calc(22px + var(--safe));
+  width:100%;max-height:80vh;overflow-y:auto;
+  animation:slideUp .3s cubic-bezier(.34,1.56,.64,1);
+}
 @keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
-.modal-hdl{width:38px;height:4px;background:var(--b2);border-radius:2px;margin:0 auto 18px}
-.modal-ttl{font-family:'Playfair Display',serif;font-size:1.2rem;margin-bottom:18px;
-  background:linear-gradient(135deg,var(--gold2),var(--t1));
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-.fg{margin-bottom:12px}
-.fl{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--t3);margin-bottom:6px;display:block}
-.fi{width:100%;background:var(--dark3);border:1px solid var(--b1);
-  border-radius:12px;padding:11px 14px;color:var(--t1);
-  font-family:'DM Sans',sans-serif;font-size:14px;-webkit-appearance:none;transition:border .2s}
-.fi:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(225,175,0,.12)}
-.frow{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.m-actions{display:flex;gap:9px;margin-top:18px}
-.mbtn{flex:1;padding:13px;border-radius:12px;font-family:'DM Sans',sans-serif;
-  font-size:13px;font-weight:700;cursor:pointer;transition:all .2s}
-.mbtn-p{background:linear-gradient(135deg,var(--gold),var(--red));color:var(--dark);border:none;
-  box-shadow:0 5px 18px rgba(225,175,0,.22)}
-.mbtn-o{background:transparent;border:1px solid var(--b2);color:var(--t2)}
+.modal-hdl{width:38px;height:4px;background:rgba(225,175,0,.3);
+  border-radius:2px;margin:0 auto 18px}
+.modal-ttl{font-size:1.1rem;font-weight:700;color:var(--or);margin-bottom:6px}
+.modal-sub{font-size:13px;color:var(--t3);margin-bottom:18px;line-height:1.6}
+.modal-prog{margin-bottom:16px}
+.prog-item{display:flex;align-items:center;gap:8px;padding:8px 0;
+  border-bottom:1px solid rgba(225,175,0,.1);font-size:13px;color:var(--t2)}
+.prog-icon{font-size:1.1rem;width:28px;text-align:center}
+.prog-spin{width:16px;height:16px;border:2px solid rgba(225,175,0,.2);
+  border-top-color:var(--or);border-radius:50%;
+  animation:spin .7s linear infinite;flex-shrink:0;display:none}
+.prog-ok{color:#81C784;font-size:1rem;display:none}
+.prog-item.loading .prog-spin{display:block}
+.prog-item.done .prog-ok{display:block}
+.prog-item.done .prog-spin{display:none}
+.word-result{display:none;text-align:center;padding:10px 0}
+.word-result.show{display:block}
+.word-blob{display:block;padding:16px;border-radius:14px;
+  background:linear-gradient(135deg,var(--or),var(--red));
+  color:var(--dark);font-size:15px;font-weight:800;
+  text-decoration:none;text-align:center;margin-bottom:10px;
+  cursor:pointer;border:none;width:100%;font-family:inherit}
+.word-note{font-size:12px;color:var(--t3);line-height:1.7}
 
-/* BOTONS */
-.btn-full{width:100%;padding:14px;border:none;border-radius:var(--r);
-  background:linear-gradient(135deg,var(--gold) 0%,var(--red) 100%);
-  color:var(--dark);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;
-  cursor:pointer;display:flex;align-items:center;justify-content:center;
-  gap:8px;transition:all .2s;margin-bottom:9px;
-  box-shadow:0 4px 18px rgba(225,175,0,.2)}
-.btn-full:active{transform:scale(.99)}
-.btn-out{width:100%;padding:12px;background:transparent;color:var(--t2);
-  border:1px solid var(--b2);border-radius:var(--r);font-family:'DM Sans',sans-serif;
-  font-size:12px;font-weight:500;cursor:pointer;margin-bottom:8px;transition:all .2s}
-.btn-out:active{border-color:var(--gold);color:var(--gold2);background:rgba(225,175,0,.08)}
-.btn-danger{color:var(--sr)!important;border-color:rgba(244,67,54,.3)!important}
-.empty{text-align:center;padding:38px 16px;color:var(--t3)}
-.empty .ei{font-size:2.4rem;margin-bottom:12px;opacity:.28}
-.empty p{font-size:13px;line-height:1.9}
-.act-item{display:flex;align-items:center;gap:11px;padding:10px 0;border-bottom:1px solid var(--b1)}
-.act-item:last-child{border-bottom:none}
-.act-icon{width:34px;height:34px;border-radius:10px;background:var(--dark3);
-  border:1px solid var(--b1);display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0}
-.act-text{flex:1;font-size:12px;color:var(--t2);line-height:1.5}
-.act-time{font-size:10px;color:var(--t3)}
-.disclaimer{font-size:10px;color:var(--t3);line-height:1.7;text-align:center;
-  margin-top:8px;padding:9px 12px;border:1px solid var(--b1);border-radius:10px}
-::-webkit-scrollbar{width:3px}::-webkit-scrollbar-thumb{background:var(--b2);border-radius:2px}
+/* TOAST */
+.toast{position:fixed;bottom:calc(90px + var(--safe));left:50%;
+  transform:translateX(-50%) translateY(20px);
+  background:linear-gradient(135deg,var(--or),var(--red));
+  color:var(--dark);padding:10px 20px;border-radius:999px;
+  font-size:13px;font-weight:700;z-index:500;
+  white-space:nowrap;opacity:0;transition:all .3s;pointer-events:none}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:3px}
+::-webkit-scrollbar-thumb{background:rgba(225,175,0,.3);border-radius:2px}
 </style>
 </head>
 <body>
 <div class="app">
+
   <!-- TOPBAR -->
   <div class="topbar">
-    <div class="tb-brand">
-      <div class="tb-logo">🌿</div>
-      <div><div class="tb-name">Jordi Torres Isach</div><div class="tb-sub">Diagnòstic Holístic IA</div></div>
+    <div class="tb-logo">🌿</div>
+    <div>
+      <div class="tb-name">Jordi Torres Isach</div>
+      <div class="tb-sub">Diagnòstic Holístic</div>
     </div>
-    <div class="tb-pt" id="topPt" style="display:none"></div>
   </div>
 
-  <div class="content">
+  <!-- SCREEN 1: LLISTA PACIENTS + NOU -->
+  <div class="screen on s1" id="s-pacients">
+    <div class="s1-title">Nova consulta</div>
+    <div class="s1-sub">Crea un pacient o selecciona'n un d'existent</div>
 
-    <!-- HOME -->
-    <div class="page on" id="page-home">
-      <div class="stats-row">
-        <div class="stat"><div class="stat-num" id="sP">0</div><div class="stat-lbl">Pacients</div></div>
-        <div class="stat"><div class="stat-num" id="sS">0</div><div class="stat-lbl">Sessions</div></div>
-        <div class="stat"><div class="stat-num" id="sT">0</div><div class="stat-lbl">Avui</div></div>
+    <div class="inp-group">
+      <label class="inp-label">Nom complet</label>
+      <input class="inp" id="ptNom" placeholder="Nom i cognoms" autocomplete="off">
+    </div>
+    <div class="inp-row">
+      <div class="inp-group">
+        <label class="inp-label">Edat</label>
+        <input class="inp" id="ptEdat" type="number" placeholder="Anys" inputmode="numeric">
       </div>
-      <div class="card">
-        <div class="card-title">Accés ràpid</div>
-        <button class="btn-full" onclick="goPage('diagnosis')">◉ Nova Anàlisi Holística</button>
-        <button class="btn-out" onclick="openModal()">＋ Nou pacient</button>
-        <button class="btn-out" onclick="goPage('patients')">♦ Veure totes les fitxes</button>
+      <div class="inp-group">
+        <label class="inp-label">Sexe</label>
+        <select class="inp" id="ptSexe">
+          <option value="">—</option>
+          <option value="Dona">Dona</option>
+          <option value="Home">Home</option>
+          <option value="Altres">Altres</option>
+        </select>
       </div>
-      <div class="card">
-        <div class="card-title">Pacients recents</div>
-        <div class="pt-scroll" id="homePts">
-          <div style="font-size:12px;color:var(--t3)">Cap pacient. <span style="color:var(--gold);cursor:pointer" onclick="openModal()">Crear →</span></div>
-        </div>
-      </div>
-      <div class="card">
-        <div class="card-title">Activitat recent</div>
-        <div id="recentAct"><div class="empty" style="padding:18px"><div class="ei">◈</div><p>Comença el primer diagnòstic</p></div></div>
+    </div>
+    <div class="inp-group">
+      <label class="inp-label">Motiu de consulta</label>
+      <input class="inp" id="ptMotiu" placeholder="Dolor, fatiga, digestió..." autocomplete="off">
+    </div>
+    <button class="btn-start" onclick="iniciarSessio()">
+      ▶ Iniciar diagnòstic
+    </button>
+
+    <div style="height:1px;background:rgba(225,175,0,.2);margin:4px 0"></div>
+    <div style="font-size:11px;color:var(--t3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px">Pacients recents</div>
+    <div class="pts-list" id="ptsList"></div>
+    <div style="height:20px"></div>
+  </div>
+
+  <!-- SCREEN 2: SESSIÓ DIAGNÒSTIC -->
+  <div class="screen" id="s-sessio">
+    <div class="s2-header">
+      <div class="s2-back" onclick="tornarPacients()">←</div>
+      <div class="s2-pt">
+        <div class="s2-pt-nom" id="s2nom">—</div>
+        <div class="s2-pt-info" id="s2info">—</div>
       </div>
     </div>
 
-    <!-- DIAGNOSIS -->
-    <div class="page" id="page-diagnosis">
-      <!-- Pacient -->
-      <div class="card">
-        <div class="card-title">Pacient actiu</div>
-        <div class="pt-scroll" id="diagPts">
-          <div style="font-size:12px;color:var(--t3)">Cap pacient. <span style="color:var(--gold);cursor:pointer" onclick="openModal()">Crear →</span></div>
-        </div>
-        <div id="ageAlert" style="display:none;margin-top:10px"></div>
-      </div>
+    <div class="s2-body" id="s2body">
+      <!-- Cards dels mètodes es creen dinàmicament -->
+    </div>
 
-      <!-- Mètodes — GRAN I VISUAL -->
-      <div class="method-section">
-        <div class="method-section-title">Selecciona el mètode d'exploració</div>
-        <div class="method-grid" id="methodGrid">
-          <div class="method-btn on" data-mod="iris"   onclick="selMod(this)"><div class="mi">👁</div><div class="ml">Iridologia</div></div>
-          <div class="method-btn"    data-mod="tongue" onclick="selMod(this)"><div class="mi">🫦</div><div class="ml">Llengua MXC</div></div>
-          <div class="method-btn"    data-mod="nails"  onclick="selMod(this)"><div class="mi">💅</div><div class="ml">Ungles</div></div>
-          <div class="method-btn"    data-mod="face"   onclick="selMod(this)"><div class="mi">🙂</div><div class="ml">Diagnòstic Facial</div></div>
-          <div class="method-btn"    data-mod="hand"   onclick="selMod(this)"><div class="mi">🖐</div><div class="ml">Reflexologia Mà</div></div>
-          <div class="method-btn"    data-mod="foot"   onclick="selMod(this)"><div class="mi">🦶</div><div class="ml">Reflexologia Peu</div></div>
-          <div class="method-btn"    data-mod="skin"   onclick="selMod(this)"><div class="mi">🔬</div><div class="ml">Pell / Acne</div></div>
-          <div class="method-btn"    data-mod="ear"    onclick="selMod(this)"><div class="mi">👂</div><div class="ml">Auriculoteràpia</div></div>
-          <div class="method-btn"    data-mod="lips"   onclick="selMod(this)"><div class="mi">💋</div><div class="ml">Diagnòstic Llavis</div></div>
-          <div class="method-btn"    data-mod="hair"   onclick="selMod(this)"><div class="mi">💇</div><div class="ml">Tricologia</div></div>
-        </div>
-      </div>
-
-      <!-- Guia -->
-      <div class="guide" id="guideBox">👁 Fotografía l'ull de prop amb llum natural. Evita el flash. Centra l'iris.</div>
-
-      <!-- Càmera -->
-      <div class="cam-zone" id="camZone" onclick="trigCam()">
-        <div class="cam-icon">📷</div>
-        <div class="cam-lbl">Toca per obrir la càmera<br><span>o usa els botons de sota</span></div>
-      </div>
-      <div class="cam-btns">
-        <button class="cam-btn" onclick="openCam('gal')"><div class="cb-i">🖼</div>Galeria</button>
-        <button class="cam-btn" onclick="openCam('env')"><div class="cb-i">📷</div>Càmera</button>
-        <button class="cam-btn" onclick="openCam('usr')"><div class="cb-i">🤳</div>Frontal</button>
-      </div>
-      <input type="file" id="galIn"  accept="image/*"             onchange="handleImg(event)" style="display:none">
-      <input type="file" id="envIn"  accept="image/*" capture="environment" onchange="handleImg(event)" style="display:none">
-      <input type="file" id="usrIn"  accept="image/*" capture="user"        onchange="handleImg(event)" style="display:none">
-
-      <!-- Botó analitzar -->
-      <button class="analyze-btn" id="analyzeBtn" onclick="analyze()" disabled>
-        <div class="sp" id="sp1"></div>
-        <span id="btnTxt">Fes una foto per analitzar</span>
+    <!-- BOTTOM BAR amb botó Word -->
+    <div class="bottom-bar">
+      <button class="btn-word" id="btnWord" disabled onclick="generaWord()">
+        <div class="spin" id="wordSpin"></div>
+        <span id="btnWordTxt">📄 Genera Informe Word</span>
       </button>
-
-      <!-- Analítica -->
-      <div class="analytics-zone" id="analyticsZone" onclick="trigAnl()">
-        <div class="az-header">
-          <div class="az-icon">🩸</div>
-          <div><div class="az-title">Analítica de sang</div><div class="az-sub">PDF o foto · Per al creuament IA</div></div>
-          <div class="az-status" id="anlStatus">Opcional</div>
-        </div>
-        <div class="az-hint" id="anlHint">Toca per pujar l'analítica. La IA la llegirà i la creuarà amb el diagnòstic holístic automàticament.</div>
-        <input type="file" id="anlIn" accept=".pdf,image/*" onchange="handleAnl(event)" style="display:none">
-      </div>
-      <button class="cross-btn" id="crossBtn" onclick="crossAnalyze()" disabled>
-        <div class="sp" id="sp2"></div>
-        <span id="crossTxt">🔬 Creuar Analítica + Diagnòstic Holístic</span>
-      </button>
-
-      <div id="resultArea"></div>
-    </div>
-
-    <!-- PATIENTS -->
-    <div class="page" id="page-patients">
-      <button class="btn-full" onclick="openModal()">＋ Nou pacient</button>
-      <div class="pt-list" id="ptList"><div class="empty"><div class="ei">♦</div><p>Cap pacient registrat.</p></div></div>
-    </div>
-
-    <!-- DETAIL -->
-    <div class="page" id="page-ptdetail">
-      <div class="back-btn" onclick="goPage('patients')">← Tornar als pacients</div>
-      <div class="detail-hdr" id="ptHdr"></div>
-      <div id="ptInfo"></div>
-      <div id="ptAge"></div>
-      <button class="btn-full" id="ptNewSess">◉ Nova sessió per a aquest pacient</button>
-      <div class="card-title" style="margin-bottom:10px">Sessions enregistrades</div>
-      <div class="sort-tabs">
-        <button class="sort-tab on" onclick="sortSess('date',this)">📅 Data</button>
-        <button class="sort-tab" onclick="sortSess('mod',this)">🔬 Mètode</button>
-        <button class="sort-tab" onclick="sortSess('urgency',this)">🚦 Urgència</button>
-      </div>
-      <div id="sessList"></div>
-      <button class="btn-out btn-danger" id="ptDel">Eliminar pacient</button>
+      <div class="word-count" id="wordCount">0 de 4 mètodes completats</div>
     </div>
   </div>
 
-  <!-- BOTTOM NAV -->
-  <div class="bnav">
-    <button class="nb on" id="nb-home" onclick="goPage('home')"><div class="ni">⊞</div>Inici</button>
-    <button class="nb nb-main" onclick="goPage('diagnosis')"><div class="ni">◉</div>Analitzar</button>
-    <button class="nb" id="nb-patients" onclick="goPage('patients')"><div class="ni">♦</div>Pacients</button>
-  </div>
 </div>
 
-<!-- MODAL -->
-<div class="modal-ov" id="modalOv">
+<!-- MODAL WORD -->
+<div class="modal-ov" id="modalWord">
   <div class="modal">
     <div class="modal-hdl"></div>
-    <div class="modal-ttl">Nou Pacient</div>
-    <div class="frow">
-      <div class="fg"><label class="fl">Nom</label><input class="fi" id="pNom" placeholder="Nom"></div>
-      <div class="fg"><label class="fl">Cognoms</label><input class="fi" id="pCog" placeholder="Cognoms"></div>
-    </div>
-    <div class="frow">
-      <div class="fg"><label class="fl">Edat</label><input class="fi" id="pEdat" type="number" placeholder="Anys" inputmode="numeric"></div>
-      <div class="fg"><label class="fl">Sexe</label>
-        <select class="fi" id="pSexe"><option value="">—</option><option value="H">Home</option><option value="D">Dona</option><option value="A">Altres</option></select>
-      </div>
-    </div>
-    <div class="fg"><label class="fl">Motiu de consulta</label><input class="fi" id="pMotiu" placeholder="Dolor, fatiga, digestió..."></div>
-    <div class="fg"><label class="fl">Antecedents</label><input class="fi" id="pAntec" placeholder="Patologies, medicació..."></div>
-    <div class="m-actions">
-      <button class="mbtn mbtn-o" onclick="closeModal()">Cancel·lar</button>
-      <button class="mbtn mbtn-p" onclick="savePatient()">Guardar</button>
+    <div class="modal-ttl">📄 Generant l'Informe Word</div>
+    <div class="modal-sub" id="modalSub">Analitzant tots els mètodes i generant el document...</div>
+    <div class="modal-prog" id="modalProg"></div>
+    <div class="word-result" id="wordResult">
+      <div style="font-size:2.5rem;margin-bottom:12px">✅</div>
+      <div style="font-size:15px;font-weight:700;color:var(--or);margin-bottom:8px">Informe generat!</div>
+      <div class="word-note" id="wordNote"></div>
+      <div style="height:14px"></div>
+      <button class="word-blob" onclick="copiaInforme()">📋 Copiar informe complet</button>
+      <button class="word-blob" style="background:var(--dark3);border:1.5px solid rgba(225,175,0,.4);color:var(--or)" onclick="comparteixWA()">📲 Enviar per WhatsApp</button>
+      <button class="word-blob" style="background:transparent;border:1.5px solid rgba(225,175,0,.25);color:var(--t2);margin-top:4px" onclick="tancaModal()">Tancar</button>
     </div>
   </div>
 </div>
 
+<div class="toast" id="toast"></div>
+
+<!-- Inputs càmera -->
+<input type="file" id="galIn" accept="image/*" onchange="handleImg(event)" style="display:none">
+<input type="file" id="envIn" accept="image/*" capture="environment" onchange="handleImg(event)" style="display:none">
+<input type="file" id="usrIn" accept="image/*" capture="user" onchange="handleImg(event)" style="display:none">
+
 <script>
-let patients=JSON.parse(localStorage.getItem('hol_pts')||'[]');
-let sessions=JSON.parse(localStorage.getItem('hol_sess')||'[]');
-let activePtId=null,detailPtId=null,currentMod='iris';
-let capturedImage=null,analyticsData=null,lastResult=null,sortMode='date',activities=[];
-const TEL='677 010 458';
+// ════════════════════════════════════════
+// CONFIG
+// ════════════════════════════════════════
+const METODES = [
+  {id:'iris',  icon:'👁',  nom:'Iris i ulls',      guia:'Foto de prop, llum natural. L\'iris ha de ser ben visible.'},
+  {id:'tong',  icon:'🫦', nom:'Llengua',           guia:'Llengua treta completament. Llum blanca. En dejú si és possible.'},
+  {id:'nail',  icon:'💅', nom:'Ungles i mans',     guia:'Les dues mans, llum natural, sense esmalt. Lúnula visible.'},
+  {id:'ear',   icon:'👂', nom:'Orella',            guia:'Pavelló auricular complet, llum natural. Lòbul visible.'},
+];
 
-const modCfg={
-  iris:{icon:'👁',label:'Iridologia',guide:"Fotografía l'ull de prop amb llum natural lateral. Evita el flash. Centra l'iris."},
-  tongue:{icon:'🫦',label:'Llengua MXC',guide:"Treu la llengua completament. Llum blanca. Sense menjar ni cafè 30 min abans."},
-  nails:{icon:'💅',label:'Ungles',guide:"Les dues mans, llum natural, sense esmalt. Lúnula i llit ungueal visibles."},
-  face:{icon:'🙂',label:'Facial',guide:"Rostre complet, llum frontal. Sense maquillatge. Expressió neutra."},
-  hand:{icon:'🖐',label:'Reflex. Mà',guide:"Palma oberta, llum natural. Les dues mans si és possible."},
-  foot:{icon:'🦶',label:'Reflex. Peu',guide:"Planta del peu, llum natural. Els dos peus si és possible."},
-  skin:{icon:'🔬',label:'Pell/Acne',guide:"Zona de pell, llum natural. Per acne: foto frontal sense maquillatge."},
-  ear:{icon:'👂',label:'Auriculoteràpia',guide:"Orella externa, llum natural. Les dues orelles si és possible."},
-  lips:{icon:'💋',label:'Llavis',guide:"Sense pintallavis. Boca lleugerament oberta. Llum natural."},
-  hair:{icon:'💇',label:'Tricologia',guide:"Cuir cabellut, llum natural. Zones de pèrdua o canvi de color."}
-};
+// ════════════════════════════════════════
+// ESTAT
+// ════════════════════════════════════════
+let patients = JSON.parse(localStorage.getItem('pts') || '[]');
+let currentPt = null;
+let currentImages = {}; // {iris: {b64, type, src}, ...}
+let currentResults = {}; // {iris: {text, urg}, ...}
+let activeMetId = null;
+let currentCamMet = null;
+let fullInforme = '';
 
-function getAgeGroup(a){a=parseInt(a);if(!a||isNaN(a))return null;if(a<18)return'peds';if(a<45)return'adult';if(a<65)return'mature';return'senior';}
-const ageInfo={
-  peds:{cls:'age-peds',label:"🔵 Menor d'edat",note:'Constitució en formació. Patrons pediàtrics.'},
-  adult:{cls:'age-adult',label:'🟢 Adult jove 18–44',note:"Reserves ben conservades. Prioritza patrons d'excés."},
-  mature:{cls:'age-mature',label:'🟡 Edat madura 45–64',note:'Inici de disminució del Jing. Possible perimenopausa.'},
-  senior:{cls:'age-senior',label:'🔴 Sènior 65+',note:'Tècniques suaus. Distinció envelliment fisiològic/patològic.'}
-};
-
-function buildPrompt(mod,age){
-  const g=getAgeGroup(age);
-  const ctx={peds:`IMPORTANT: Pacient de ${age} anys (menor).`,adult:`Pacient de ${age} anys (adult jove).`,mature:`Pacient de ${age} anys (edat madura). Considera perimenopausa.`,senior:`IMPORTANT: Pacient de ${age} anys. Adapta a edat avançada.`};
-  const c=age&&g?ctx[g]:'';
-  const p={
-    iris:`Ets un expert en iridologia. ${c} Analitza: 1.CONSTITUCIÓ BASE 2.ZONES IRIDALS 3.SIGNES ESPECÍFICS 4.DIAGNÒSTIC FACIAL 5.LECTURA HOLÍSTICA 6.URGÈNCIA (VERDA/GROGA/VERMELLA) 7.RECOMANACIONS`,
-    tongue:`Ets un expert en medicina xinesa. ${c} Analitza la llengua: 1.COS I COLOR 2.SABURRA 3.ZONES: punta(Cor/Pulmó) vores(Fetge) centre(Bazo) base(Ronyó) 4.SIGNES: fissures papil·les solc venes 5.PATRÓ MXC 6.URGÈNCIA (VERDA/GROGA/VERMELLA) 7.TRACTAMENT`,
-    nails:`Ets un expert en onicologia. ${c} Analitza: 1.LÚNULA 2.COLOR LLIT 3.TEXTURA 4.SIGNES 5.CUTÍCULES 6.MERIDIANS 7.URGÈNCIA 8.SUPLEMENTACIÓ`,
-    face:`Ets un expert en diagnòstic facial. ${c} Analitza: 1.ZONES REFLEXIÓ 2.COLORACIÓ 3.TEXTURA 4.ESTRUCTURAL 5.MXC 6.HORMONAL 7.URGÈNCIA 8.RECOMANACIONS`,
-    hand:`Ets un expert en reflexologia. ${c} Analitza: 1.ZONES REFLEXES 2.COLORACIÓ 3.LÍNIES 4.ARTICULACIONS 5.URGÈNCIA 6.TRACTAMENT`,
-    foot:`Ets un expert en reflexologia plantar. ${c} 1.ZONES REFLEXES 2.CAL·LOSITATS 3.COLORACIÓ 4.DEFORMITATS 5.URGÈNCIA 6.ZONES A TREBALLAR`,
-    skin:`Ets un expert en diagnòstic cutani. ${c} 1.MAPA ACNE 2.LESIONS 3.COLORACIÓ 4.TEXTURA 5.URGÈNCIA 6.TRACTAMENT`,
-    ear:`Ets un expert en auriculoteràpia. ${c} 1.FORMA 2.PLEC FRANK 3.ZONES REFLEXES 4.COLORACIÓ 5.VASCULARS 6.URGÈNCIA 7.PUNTS`,
-    lips:`Ets un expert en diagnòstic llavis. ${c} 1.COLOR 2.HIDRATACIÓ 3.COMISSURES 4.SUP vs INF 5.URGÈNCIA 6.TRACTAMENT`,
-    hair:`Ets un expert en tricologia. ${c} 1.PÈRDUA zones 2.TEXTURA 3.CUIR 4.COLOR 5.URGÈNCIA 6.TRACTAMENT`
-  };
-  return p[mod]||p.iris;
+// ════════════════════════════════════════
+// PACIENTS
+// ════════════════════════════════════════
+function renderPtsList() {
+  const el = document.getElementById('ptsList');
+  if (!patients.length) { el.innerHTML = '<div style="font-size:13px;color:var(--t3);text-align:center;padding:12px">Cap pacient. Crea el primer!</div>'; return; }
+  el.innerHTML = patients.slice(0,6).map(p => `
+    <div class="pt-item" onclick="selPt('${p.id}')">
+      <div class="pt-av">${p.sexe==='Dona'?'♀':p.sexe==='Home'?'♂':'◈'}</div>
+      <div style="flex:1;min-width:0">
+        <div class="pt-nom">${p.nom}</div>
+        <div class="pt-meta">${p.edat?p.edat+' anys · ':''}${p.motiu||'Sense motiu'}</div>
+      </div>
+      <div class="pt-n-sess">${(p.sessions||[]).length} sess.</div>
+    </div>`).join('');
 }
 
-function goPage(id){
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('on'));
-  document.querySelectorAll('.nb').forEach(b=>b.classList.remove('on'));
-  document.getElementById('page-'+id).classList.add('on');
-  document.getElementById('nb-'+id)?.classList.add('on');
-  if(id==='patients')renderPatients();
-  if(id==='home'){renderHomePts();updateStats();}
+function iniciarSessio() {
+  const nom = document.getElementById('ptNom').value.trim();
+  if (!nom) { showToast('Escriu el nom del pacient'); return; }
+  const edat = document.getElementById('ptEdat').value;
+  const sexe = document.getElementById('ptSexe').value;
+  const motiu = document.getElementById('ptMotiu').value.trim();
+
+  // Cercar si ja existeix
+  let pt = patients.find(p => p.nom.toLowerCase() === nom.toLowerCase());
+  if (!pt) {
+    pt = { id: 'P'+Date.now(), nom, edat, sexe, motiu, sessions: [] };
+    patients.unshift(pt);
+    savePts();
+  }
+  obrirSessio(pt);
 }
 
-function selMod(el){
-  document.querySelectorAll('.method-btn').forEach(b=>b.classList.remove('on'));
-  el.classList.add('on');currentMod=el.dataset.mod;
-  document.getElementById('guideBox').textContent=modCfg[currentMod].icon+' '+modCfg[currentMod].guide;
-  capturedImage=null;renderCam();checkBtn();
+function selPt(id) {
+  const pt = patients.find(p => p.id === id);
+  if (pt) obrirSessio(pt);
 }
 
-function trigCam(){document.getElementById('envIn').click();}
-function openCam(t){if(t==='gal')document.getElementById('galIn').click();else if(t==='env')document.getElementById('envIn').click();else document.getElementById('usrIn').click();}
-function handleImg(e){const f=e.target.files[0];if(!f)return;e.target.value='';const r=new FileReader();r.onload=ev=>{capturedImage={base64:ev.target.result.split(',')[1],type:f.type,src:ev.target.result};renderCam();checkBtn();};r.readAsDataURL(f);}
-function renderCam(){
-  const z=document.getElementById('camZone');
-  if(capturedImage){z.classList.add('has');z.innerHTML=`<button class="cam-remove" onclick="clearImg();event.stopPropagation()">✕ Treure</button><img class="cam-preview" src="${capturedImage.src}">`;z.onclick=null;}
-  else{z.classList.remove('has');z.innerHTML=`<div class="cam-icon">📷</div><div class="cam-lbl">Toca per obrir la càmera<br><span>o usa els botons de sota</span></div>`;z.onclick=trigCam;}
-}
-function clearImg(){capturedImage=null;renderCam();checkBtn();}
-function checkBtn(){
-  const h=!!capturedImage;
-  document.getElementById('analyzeBtn').disabled=!h;
-  document.getElementById('btnTxt').textContent=h?`◉ Analitzar · ${modCfg[currentMod].label}`:'Fes una foto per analitzar';
-  checkCross();
+function obrirSessio(pt) {
+  currentPt = pt;
+  currentImages = {};
+  currentResults = {};
+  activeMetId = null;
+  fullInforme = '';
+
+  document.getElementById('s2nom').textContent = pt.nom;
+  document.getElementById('s2info').textContent = [pt.edat ? pt.edat+' anys' : '', pt.sexe, pt.motiu].filter(Boolean).join(' · ') || 'Sense dades';
+
+  buildMetCards();
+  updateWordBtn();
+
+  // Netejar inputs
+  document.getElementById('ptNom').value = '';
+  document.getElementById('ptEdat').value = '';
+  document.getElementById('ptSexe').value = '';
+  document.getElementById('ptMotiu').value = '';
+
+  goScreen('s-sessio');
+  // Obrir primer mètode automàticament
+  setTimeout(() => toggleMet('iris'), 200);
 }
 
-function trigAnl(){document.getElementById('anlIn').click();}
-function handleAnl(e){
-  const f=e.target.files[0];if(!f)return;e.target.value='';
-  const r=new FileReader();
-  r.onload=ev=>{
-    analyticsData={base64:ev.target.result.split(',')[1],type:f.type,name:f.name};
-    document.getElementById('analyticsZone').classList.add('loaded');
-    document.getElementById('anlStatus').textContent='✓ Carregada';
-    document.getElementById('anlStatus').style.color='var(--sg)';
-    document.getElementById('anlHint').textContent=`📄 ${f.name} — Toca per canviar`;
-    checkCross();showToast('Analítica carregada! ✓');
+function tornarPacients() {
+  goScreen('s-pacients');
+  renderPtsList();
+}
+
+function savePts() {
+  localStorage.setItem('pts', JSON.stringify(patients));
+}
+
+// ════════════════════════════════════════
+// CARDS MÈTODES
+// ════════════════════════════════════════
+function buildMetCards() {
+  const body = document.getElementById('s2body');
+  body.innerHTML = METODES.map((m,i) => `
+    <div class="met-card" id="mc-${m.id}">
+      <div class="met-header" onclick="toggleMet('${m.id}')">
+        <div class="met-icon">${m.icon}</div>
+        <div class="met-info">
+          <div class="met-nom">${m.nom}</div>
+          <div class="met-guia">${m.guia}</div>
+        </div>
+        <div class="met-status">
+          <div class="met-check">✓</div>
+          <div class="met-num">${i+1}</div>
+        </div>
+      </div>
+      <div class="met-body" id="mb-${m.id}">
+        <div class="cam-zona" id="cz-${m.id}" onclick="camZonaTap('${m.id}')">
+          <div class="cam-emoji">📷</div>
+          <div class="cam-txt">Toca per obrir la càmera<br><span>o usa els botons de sota</span></div>
+        </div>
+        <div class="cam-btns">
+          <button class="cam-btn" onclick="openCam('gal','${m.id}')"><div class="cam-btn-icon">🖼</div>Galeria</button>
+          <button class="cam-btn" onclick="openCam('env','${m.id}')"><div class="cam-btn-icon">📷</div>Càmera</button>
+          <button class="cam-btn" onclick="openCam('usr','${m.id}')"><div class="cam-btn-icon">🤳</div>Frontal</button>
+        </div>
+        <button class="btn-analitza" id="ba-${m.id}" onclick="analitza('${m.id}')" disabled>
+          <div class="spin" id="sp-${m.id}"></div>
+          <span id="bat-${m.id}">Fes la foto primer</span>
+        </button>
+        <div id="res-${m.id}"></div>
+      </div>
+    </div>`).join('') +
+    // Historial sessions anteriors
+    renderHistorial();
+}
+
+function renderHistorial() {
+  if (!currentPt || !currentPt.sessions || !currentPt.sessions.length) return '';
+  return `<div style="margin-top:8px">
+    <div style="font-size:11px;color:var(--t3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px">Sessions anteriors</div>
+    ${currentPt.sessions.slice(0,5).map((s,i) => `
+      <div class="hist-card">
+        <div class="hist-hdr" onclick="togHist('hs${i}')">
+          <div class="hist-mets">${(s.mets||[]).map(m=>METODES.find(x=>x.id===m)?.icon||'').join('')}</div>
+          <div class="hist-date">${new Date(s.date).toLocaleDateString('ca-ES')}</div>
+          <div style="color:var(--t3);font-size:12px">▾</div>
+        </div>
+        <div class="hist-body" id="hs${i}">
+          ${Object.entries(s.results||{}).map(([mid,r]) => {
+            const m = METODES.find(x=>x.id===mid);
+            return `<div style="margin-top:10px;font-size:12px;color:var(--or);font-weight:700">${m?.icon||''} ${m?.nom||mid}</div>
+                    <div class="hist-res">${(r.text||'').substring(0,300)}…</div>`;
+          }).join('')}
+        </div>
+      </div>`).join('')}
+  </div>`;
+}
+
+function togHist(id) {
+  document.getElementById(id)?.classList.toggle('open');
+}
+
+function toggleMet(id) {
+  // Tancar l'anterior
+  if (activeMetId && activeMetId !== id) {
+    document.getElementById('mc-'+activeMetId)?.classList.remove('active');
+  }
+  const card = document.getElementById('mc-'+id);
+  if (!card) return;
+  const isOpen = card.classList.contains('active');
+  card.classList.toggle('active', !isOpen);
+  activeMetId = isOpen ? null : id;
+  if (!isOpen) {
+    // Scroll suau fins a la card
+    setTimeout(() => card.scrollIntoView({behavior:'smooth', block:'start'}), 100);
+  }
+}
+
+// ════════════════════════════════════════
+// CÀMERA
+// ════════════════════════════════════════
+function camZonaTap(id) {
+  openCam('env', id);
+}
+
+function openCam(tipus, metId) {
+  currentCamMet = metId;
+  const inp = document.getElementById(tipus+'In');
+  inp.value = '';
+  inp.click();
+}
+
+function handleImg(e) {
+  const f = e.target.files[0];
+  if (!f || !currentCamMet) return;
+  e.target.value = '';
+  const r = new FileReader();
+  r.onload = ev => {
+    const src = ev.target.result;
+    const b64 = src.split(',')[1];
+    currentImages[currentCamMet] = { b64, type: f.type, src };
+    renderCamZona(currentCamMet);
+    // Habilitar botó analitzar
+    const ba = document.getElementById('ba-'+currentCamMet);
+    if (ba) { ba.disabled = false; document.getElementById('bat-'+currentCamMet).textContent = '◉ Analitzar '+METODES.find(m=>m.id===currentCamMet)?.nom; }
   };
   r.readAsDataURL(f);
 }
-function checkCross(){
-  const can=!!analyticsData&&!!lastResult;
-  document.getElementById('crossBtn').disabled=!can;
-  document.getElementById('crossTxt').textContent=analyticsData&&!lastResult?'🔬 Primer fes l\'anàlisi holística':'🔬 Creuar Analítica + Diagnòstic Holístic';
+
+function renderCamZona(id) {
+  const img = currentImages[id];
+  const zona = document.getElementById('cz-'+id);
+  if (!zona) return;
+  if (img) {
+    zona.classList.add('has-img');
+    zona.innerHTML = `<button class="cam-del" onclick="clearImg('${id}');event.stopPropagation()">✕ Treure</button><img class="cam-prev" src="${img.src}">`;
+    zona.onclick = null;
+  } else {
+    zona.classList.remove('has-img');
+    zona.innerHTML = `<div class="cam-emoji">📷</div><div class="cam-txt">Toca per obrir la càmera<br><span>o usa els botons de sota</span></div>`;
+    zona.onclick = () => camZonaTap(id);
+  }
 }
 
-async function analyze(){
-  const btn=document.getElementById('analyzeBtn'),sp=document.getElementById('sp1'),txt=document.getElementById('btnTxt'),ra=document.getElementById('resultArea');
-  const pt=patients.find(p=>p.id===activePtId),age=pt?.edat||null;
-  btn.disabled=true;sp.classList.add('on');txt.textContent='Analitzant…';ra.innerHTML='';
-  try{
-    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,messages:[{role:'user',content:[{type:'image',source:{type:'base64',media_type:capturedImage.type,data:capturedImage.base64}},{type:'text',text:buildPrompt(currentMod,age)}]}]})});
-    const data=await res.json();
-    if(data.error)throw new Error(data.error.message);
-    const text=data.content.map(b=>b.text||'').join('');
-    lastResult={text,mod:currentMod,imgSrc:capturedImage.src};
-    const tu=text.toUpperCase();let urg='green';
-    if(tu.includes('VERMELL')||tu.includes('CRÍTIC'))urg='red';
-    else if(tu.includes('GROGA')||tu.includes('MODERAD'))urg='yellow';
-    const uL={green:'🟢 Preventiu',yellow:'🟡 Atenció moderada',red:'🔴 Prioritat alta'};
-    const uC={green:'ug',yellow:'uy',red:'ur'};
-    const cfg=modCfg[currentMod],dl=new Date().toLocaleString('ca-ES');
-    const fmt=text.replace(/(\d+\.\s+[A-ZÁÈÉÍÓÚÜÀÈÌÒÙÇ\s\/·'']+:)/g,'<strong>$1</strong>');
-    ra.innerHTML=`<div class="result-card"><div class="r-header"><span style="font-size:1.2rem">${cfg.icon}</span><span class="rbadge">${cfg.label}</span><span class="ubadge ${uC[urg]}">${uL[urg]}</span>${age?`<span style="font-size:10px;color:var(--t3)">${age} anys</span>`:''}<span style="margin-left:auto;font-size:10px;color:var(--t3)">${dl}</span></div><div class="r-body">${fmt}</div><div class="r-actions"><button class="raction" onclick="copyR()">📋 Copiar</button><button class="raction" onclick="shareWA()">📱 WhatsApp</button><button class="raction" onclick="clearR()">← Nova</button></div></div><div class="disclaimer">⚠ Anàlisi orientativa. No substitueix el diagnòstic mèdic professional.</div>`;
-    const s={id:'S'+Date.now(),patientId:activePtId,date:new Date().toISOString(),dateLabel:dl,mods:[currentMod],results:[{mod:currentMod,text,imgSrc:capturedImage.src}],urgency:urg,patientAge:age};
-    sessions.unshift(s);localStorage.setItem('hol_sess',JSON.stringify(sessions));
-    updateStats();renderHomePts();addAct(pt?`${pt.nom} ${pt.cog}`:'Sense assignar',cfg.icon,dl);checkCross();
-  }catch(err){ra.innerHTML=`<div class="result-card"><div class="r-body" style="color:var(--sr)">Error: ${err.message}</div></div>`;}
-  btn.disabled=false;sp.classList.remove('on');checkBtn();
-  ra.scrollIntoView({behavior:'smooth',block:'start'});
+function clearImg(id) {
+  delete currentImages[id];
+  delete currentResults[id];
+  renderCamZona(id);
+  const ba = document.getElementById('ba-'+id);
+  if (ba) { ba.disabled = true; document.getElementById('bat-'+id).textContent = 'Fes la foto primer'; }
+  document.getElementById('res-'+id).innerHTML = '';
+  document.getElementById('mc-'+id)?.classList.remove('done');
+  updateWordBtn();
 }
 
-async function crossAnalyze(){
-  if(!analyticsData||!lastResult)return;
-  const btn=document.getElementById('crossBtn'),sp=document.getElementById('sp2'),txt=document.getElementById('crossTxt'),ra=document.getElementById('resultArea');
-  const pt=patients.find(p=>p.id===activePtId),age=pt?.edat||null;
-  btn.disabled=true;sp.classList.add('on');txt.textContent='Creuant dades…';
-  const prompt=`Ets un expert en medicina integrativa. Diagnòstic holístic (${modCfg[lastResult.mod].label})${age?' pacient de '+age+' anys':''}:\n\n${lastResult.text}\n\nAra tens l'analítica. Fes:\n1.LECTURA ANALÍTICA: valors normals/elevats/baixos\n2.CREUAMENT: quins signes holístics confirma?\n3.EL QUE FALTA: quins valors caldrien (PCR, cortisol, vit D...)\n4.DIAGNÒSTIC INTEGRAT FINAL\n5.URGÈNCIA: VERDA/GROGA/VERMELLA\n6.RECOMANACIONS PRIORITÀRIES: els 5 passos clau`;
-  try{
-    const content=analyticsData.type==='application/pdf'
-      ?[{type:'document',source:{type:'base64',media_type:'application/pdf',data:analyticsData.base64}},{type:'text',text:prompt}]
-      :[{type:'image',source:{type:'base64',media_type:analyticsData.type,data:analyticsData.base64}},{type:'text',text:prompt}];
-    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1500,messages:[{role:'user',content}]})});
-    const data=await res.json();
-    if(data.error)throw new Error(data.error.message);
-    const text=data.content.map(b=>b.text||'').join('');
-    const tu=text.toUpperCase();let urg='green';
-    if(tu.includes('VERMELL')||tu.includes('CRÍTIC'))urg='red';
-    else if(tu.includes('GROGA')||tu.includes('MODERAD'))urg='yellow';
-    const uL={green:'🟢 Preventiu',yellow:'🟡 Atenció moderada',red:'🔴 Prioritat alta'};
-    const uC={green:'ug',yellow:'uy',red:'ur'};
-    const fmt=text.replace(/(\d+\.\s+[A-ZÁÈÉÍÓÚÜÀÈÌÒÙÇ\s\/·'']+:)/g,'<strong>$1</strong>');
-    const dl=new Date().toLocaleString('ca-ES');
-    ra.innerHTML=`<div class="result-card cross-card"><div class="r-header"><span style="font-size:1.2rem">🔬</span><span class="cross-badge">🩸 Creuament Holístic + Analítica</span><span class="ubadge ${uC[urg]}">${uL[urg]}</span><span style="margin-left:auto;font-size:10px;color:var(--t3)">${dl}</span></div><div class="r-body">${fmt}</div><div class="r-actions"><button class="raction" onclick="copyCross()">📋 Copiar tot</button><button class="raction" onclick="shareWACross()">📱 WhatsApp</button></div></div>`+ra.innerHTML;
-    ra.scrollIntoView({behavior:'smooth',block:'start'});
-    showToast('Creuament completat! 🔬');
-  }catch(err){showToast('Error: '+err.message);}
-  btn.disabled=false;sp.classList.remove('on');txt.textContent='🔬 Creuar Analítica + Diagnòstic Holístic';
+// ════════════════════════════════════════
+// ANÀLISI IA
+// ════════════════════════════════════════
+const PROMPTS = {
+  iris: `Ets un expert en iridologia i diagnòstic facial. Analitza aquesta imatge de l'ull i rostre. Respon EN CATALÀ. Estructura la resposta amb seccions:
+1. CONSTITUCIÓ BASE (hematògena/biliar/nerviosa/mixta)
+2. SIGNES FACIALS (bosses, coloració, pell)
+3. LECTURA IRIDAL (zones i signes principals)
+4. DIAGNÒSTIC MXC (patró dels Huit Principis)
+5. URGÈNCIA (escriu exactament: VERDA, GROGA o VERMELLA)
+6. RECOMANACIONS CLAU (3 punts pràctics)`,
+
+  tong: `Ets un expert en diagnòstic de la llengua per la Medicina Xinesa Clàssica. Analitza aquesta imatge de la llengua. Respon EN CATALÀ. Estructura:
+1. COLOR DEL COS (pàl·lid/rosa/vermell/violaci/etc)
+2. SABURRA (color, densitat, distribució per zones)
+3. ZONES ORGÀNIQUES (punta=Cor, bordes=Fetge, centre=Bazo-Est, base=Ronyó)
+4. SIGNES ESPECIALS (fissures, papil·les, solc, dentats)
+5. PATRÓ MXC (Deficiència/Excés, Fred/Calor, Interior/Exterior)
+6. URGÈNCIA (escriu exactament: VERDA, GROGA o VERMELLA)
+7. RECOMANACIONS (3 punts)`,
+
+  nail: `Ets un expert en onicologia holística. Analitza les ungles i les mans. Respon EN CATALÀ. Estructura:
+1. LÚNULA (present/absent en quins dits — reserva de Yang)
+2. COLOR DEL LLIT (pàl·lid/rosat/violaci/blavós)
+3. TEXTURA I FORMA (estries, rugositats, forma)
+4. PELL DE LES MANS (sequedat, lentigos, venes)
+5. CUTÍCULES (estat, mossegades, etc)
+6. DIAGNÒSTIC HOLÍSTIC (deficiències, patrons)
+7. URGÈNCIA (escriu exactament: VERDA, GROGA o VERMELLA)
+8. SUPLEMENTACIÓ RECOMANADA`,
+
+  ear: `Ets un expert en auriculoteràpia i diagnòstic auricular. Analitza el pavelló auricular. Respon EN CATALÀ. Estructura:
+1. PLEC DE FRANK (present/absent al lòbul — risc CV)
+2. COLOR I TEXTURA GENERAL
+3. ZONES REACTIVES (hèlix, antihèlix, conca, lòbul, tragus)
+4. NÒDULS O PUNTS DESTACATS
+5. SNA (activació simpàtica/parasimpàtica)
+6. DIAGNÒSTIC HOLÍSTIC
+7. URGÈNCIA (escriu exactament: VERDA, GROGA o VERMELLA)
+8. PUNTS AURICULARS RECOMANATS`,
+};
+
+async function analitza(id) {
+  const img = currentImages[id];
+  if (!img) return;
+
+  const btn = document.getElementById('ba-'+id);
+  const sp = document.getElementById('sp-'+id);
+  const btxt = document.getElementById('bat-'+id);
+  const resEl = document.getElementById('res-'+id);
+
+  btn.disabled = true;
+  sp.classList.add('on');
+  btxt.textContent = 'Analitzant…';
+  resEl.innerHTML = '';
+
+  const age = currentPt?.edat ? `El pacient té ${currentPt.edat} anys.` : '';
+  const prompt = (PROMPTS[id]||PROMPTS.iris) + (age ? '\n\n'+age : '');
+
+  try {
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-6',
+        max_tokens: 1000,
+        messages: [{role:'user', content:[
+          {type:'image', source:{type:'base64', media_type:img.type, data:img.b64}},
+          {type:'text', text:prompt}
+        ]}]
+      })
+    });
+    const data = await resp.json();
+    if (data.error) throw new Error(data.error.message);
+    const text = data.content.map(b=>b.text||'').join('');
+
+    // Detectar urgència
+    const tu = text.toUpperCase();
+    let urg = 'g';
+    if (tu.includes('VERMELLA') || tu.includes('CRÍTIC')) urg = 'r';
+    else if (tu.includes('GROGA') || tu.includes('MODERAD')) urg = 'y';
+    const urgLabels = {g:'🟢 Preventiu', y:'🟡 Atenció moderada', r:'🔴 Prioritat alta'};
+
+    currentResults[id] = { text, urg };
+
+    // Format del text
+    const fmt = text.replace(/(\d+\.\s+[A-ZÁÈÉÍÓÚÜÀÈÌÒÙÇ\s\/·'']+:)/g, '<strong>$1</strong>');
+    resEl.innerHTML = `<div class="resultat"><span class="urg-badge urg-${urg}">${urgLabels[urg]}</span>\n${fmt}</div>`;
+
+    // Marcar com a done
+    document.getElementById('mc-'+id)?.classList.add('done');
+
+    // Auto-obrir el següent
+    const idx = METODES.findIndex(m=>m.id===id);
+    if (idx < METODES.length-1) {
+      const nextId = METODES[idx+1].id;
+      setTimeout(() => {
+        toggleMet(id); // tancar actual
+        setTimeout(() => toggleMet(nextId), 200); // obrir següent
+      }, 1200);
+    }
+
+    updateWordBtn();
+    showToast(METODES.find(m=>m.id===id)?.icon + ' Anàlisi completada ✓');
+
+  } catch(err) {
+    resEl.innerHTML = `<div class="resultat" style="color:#EF9A9A">Error: ${err.message}</div>`;
+  }
+
+  btn.disabled = false;
+  sp.classList.remove('on');
+  btxt.textContent = '◉ Tornar a analitzar';
 }
 
-function copyR(){navigator.clipboard?.writeText(document.querySelector('.r-body')?.innerText||'').then(()=>showToast('Copiat! ✓'));}
-function copyCross(){const t=Array.from(document.querySelectorAll('.r-body')).map(e=>e.innerText).join('\n\n---\n\n');navigator.clipboard?.writeText(t).then(()=>showToast('Informe copiat! ✓'));}
-function shareWA(){const t=(document.querySelector('.r-body')?.innerText||'').substring(0,800)+'...';window.open('https://wa.me/?text='+encodeURIComponent('🌿 Diagnòstic Holístic · Jordi Torres Isach\n'+TEL+'\n\n'+t));}
-function shareWACross(){const t=Array.from(document.querySelectorAll('.r-body')).map(e=>e.innerText).join('\n\n').substring(0,1000)+'...';window.open('https://wa.me/?text='+encodeURIComponent('🔬 Diagnòstic Integrat · Jordi Torres Isach\n'+TEL+'\n\n'+t));}
-function clearR(){capturedImage=null;lastResult=null;document.getElementById('resultArea').innerHTML='';renderCam();checkBtn();checkCross();window.scrollTo(0,0);}
-
-function showToast(msg){const t=document.createElement('div');t.textContent=msg;t.style.cssText='position:fixed;bottom:105px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,var(--gold),var(--red));color:var(--dark);padding:10px 20px;border-radius:999px;font-size:13px;font-weight:700;z-index:999;animation:fadeUp .3s ease;box-shadow:0 5px 18px rgba(225,175,0,.35);white-space:nowrap';document.body.appendChild(t);setTimeout(()=>t.remove(),2300);}
-
-function openModal(){document.getElementById('modalOv').classList.add('open');}
-function closeModal(){document.getElementById('modalOv').classList.remove('open');['pNom','pCog','pEdat','pSexe','pMotiu','pAntec'].forEach(id=>document.getElementById(id).value='');}
-function savePatient(){
-  const nom=document.getElementById('pNom').value.trim();if(!nom){alert('El nom és obligatori');return;}
-  const p={id:'P'+Date.now(),nom,cog:document.getElementById('pCog').value.trim(),edat:document.getElementById('pEdat').value,sexe:document.getElementById('pSexe').value,motiu:document.getElementById('pMotiu').value.trim(),antec:document.getElementById('pAntec').value.trim(),created:new Date().toISOString()};
-  patients.unshift(p);localStorage.setItem('hol_pts',JSON.stringify(patients));
-  closeModal();updateStats();renderPatients();renderHomePts();renderDiagPts();showToast('Pacient guardat! ✓');
+// ════════════════════════════════════════
+// WORD GENERATOR
+// ════════════════════════════════════════
+function updateWordBtn() {
+  const done = Object.keys(currentResults).length;
+  const btn = document.getElementById('btnWord');
+  const count = document.getElementById('wordCount');
+  btn.disabled = done === 0;
+  const total = METODES.length;
+  count.innerHTML = `<span>${done}</span> de ${total} mètodes completats${done>0?' · Ja pots generar!':''}`;
 }
 
-function renderPatients(){
-  const el=document.getElementById('ptList');
-  if(!patients.length){el.innerHTML='<div class="empty"><div class="ei">♦</div><p>Cap pacient registrat.</p></div>';return;}
-  el.innerHTML=patients.map(p=>{
-    const ptS=sessions.filter(s=>s.patientId===p.id),urg=ptS[0]?.urgency||'green';
-    const dc={green:'var(--sg)',yellow:'var(--sy)',red:'var(--sr)'}[urg],sx={H:'♂',D:'♀',A:'◈'}[p.sexe]||'◈';
-    return `<div class="pt-card" onclick="openDetail('${p.id}')"><div class="pt-avatar">${sx}</div><div class="pt-info"><div class="pt-name">${p.nom} ${p.cog}</div><div class="pt-meta">${p.edat?p.edat+' anys · ':''}${p.motiu||'Sense motiu'}</div></div><span class="pt-sb">${ptS.length} sess.</span><div class="pt-urg" style="background:${dc}"></div></div>`;
-  }).join('');
-}
-function renderHomePts(){
-  const el=document.getElementById('homePts');
-  if(!patients.length){el.innerHTML='<span style="font-size:12px;color:var(--t3)">Cap pacient. <span style="color:var(--gold);cursor:pointer" onclick="openModal()">Crear →</span></span>';return;}
-  el.innerHTML=patients.slice(0,7).map(p=>`<div class="pt-pill ${activePtId===p.id?'on':''}" onclick="selPt('${p.id}')"><div class="pa">${{H:'♂',D:'♀',A:'◈'}[p.sexe]||'◈'}</div><span>${p.nom}</span>${p.edat?`<span style="font-size:10px;color:var(--t3)">${p.edat}a</span>`:''}</div>`).join('');
-}
-function renderDiagPts(){
-  const el=document.getElementById('diagPts');
-  if(!patients.length){el.innerHTML='<span style="font-size:12px;color:var(--t3)">Cap pacient. <span style="color:var(--gold);cursor:pointer" onclick="openModal()">Crear →</span></span>';return;}
-  el.innerHTML=patients.slice(0,8).map(p=>`<div class="pt-pill ${activePtId===p.id?'on':''}" onclick="selPt('${p.id}')"><div class="pa">${{H:'♂',D:'♀',A:'◈'}[p.sexe]||'◈'}</div><span>${p.nom}</span>${p.edat?`<span style="font-size:10px;color:var(--t3)">${p.edat}a</span>`:''}</div>`).join('');
-}
-function selPt(id){
-  activePtId=id;const p=patients.find(x=>x.id===id);
-  document.getElementById('topPt').textContent=p.nom+' '+p.cog;document.getElementById('topPt').style.display='block';
-  renderHomePts();renderDiagPts();
-  const g=getAgeGroup(p.edat),al=document.getElementById('ageAlert');
-  if(g){const info=ageInfo[g];al.className='age-alert '+info.cls;al.innerHTML=`<strong>${info.label}</strong><br>${info.note}`;al.style.display='block';}
-  else al.style.display='none';
-}
-function openDetail(id){
-  detailPtId=id;const p=patients.find(x=>x.id===id);if(!p)return;
-  const sx={H:'♂',D:'♀',A:'◈'}[p.sexe]||'◈';
-  document.getElementById('ptHdr').innerHTML=`<div class="detail-av">${sx}</div><div><div class="detail-name">${p.nom} ${p.cog}</div><div class="detail-sub">${p.edat?p.edat+' anys · ':''}${p.sexe==='H'?'Home':p.sexe==='D'?'Dona':'Altres'}</div></div>`;
-  const g=getAgeGroup(p.edat);
-  document.getElementById('ptAge').innerHTML=g?`<div class="age-alert ${ageInfo[g].cls}" style="margin-bottom:12px"><strong>${ageInfo[g].label}</strong><br>${ageInfo[g].note}</div>`:'';
-  document.getElementById('ptInfo').innerHTML=`<div class="info-grid"><div class="info-item"><div class="info-lbl">Edat</div><div class="info-val">${p.edat?p.edat+' anys':'—'}</div></div><div class="info-item"><div class="info-lbl">Sessions</div><div class="info-val">${sessions.filter(s=>s.patientId===id).length}</div></div><div class="info-item full"><div class="info-lbl">Motiu</div><div class="info-val">${p.motiu||'—'}</div></div><div class="info-item full"><div class="info-lbl">Antecedents</div><div class="info-val">${p.antec||'—'}</div></div></div>`;
-  document.getElementById('ptNewSess').onclick=()=>{selPt(id);goPage('diagnosis');};
-  document.getElementById('ptDel').onclick=()=>deletePt(id);
-  renderSessions(id,sortMode);
-  document.querySelectorAll('.page').forEach(pp=>pp.classList.remove('on'));
-  document.getElementById('page-ptdetail').classList.add('on');
-}
-function deletePt(id){
-  if(!confirm('Eliminar pacient i totes les sessions?'))return;
-  patients=patients.filter(p=>p.id!==id);sessions=sessions.filter(s=>s.patientId!==id);
-  localStorage.setItem('hol_pts',JSON.stringify(patients));localStorage.setItem('hol_sess',JSON.stringify(sessions));
-  if(activePtId===id){activePtId=null;document.getElementById('topPt').style.display='none';}
-  goPage('patients');updateStats();renderHomePts();renderDiagPts();
-}
-function sortSess(mode,el){sortMode=mode;document.querySelectorAll('.sort-tab').forEach(b=>b.classList.remove('on'));el.classList.add('on');if(detailPtId)renderSessions(detailPtId,mode);}
-function renderSessions(ptId,mode){
-  const el=document.getElementById('sessList');
-  let s=sessions.filter(x=>x.patientId===ptId);
-  if(!s.length){el.innerHTML='<div class="empty" style="padding:18px"><div class="ei">◈</div><p>Sense sessions.</p></div>';return;}
-  if(mode==='date')s.sort((a,b)=>new Date(b.date)-new Date(a.date));
-  else if(mode==='mod')s.sort((a,b)=>(a.mods||[]).join().localeCompare((b.mods||[]).join()));
-  else s.sort((a,b)=>({red:0,yellow:1,green:2}[a.urgency]||2)-({red:0,yellow:1,green:2}[b.urgency]||2));
-  const uC={green:'ug',yellow:'uy',red:'ur'},uL={green:'🟢',yellow:'🟡',red:'🔴'};
-  el.innerHTML=s.map((x,i)=>`<div class="sess-item"><div class="sess-hdr" onclick="togSess('sb${i}')"><span class="ubadge ${uC[x.urgency||'green']}">${uL[x.urgency||'green']}</span><span class="sess-date">${x.dateLabel||new Date(x.date).toLocaleString('ca-ES')}</span><div class="sess-mods">${(x.mods||[]).map(m=>modCfg[m]?.icon||m).join('')}</div><span style="color:var(--t3);font-size:12px">▾</span></div><div class="sess-body" id="sb${i}">${(x.results||[]).map(r=>`${r.imgSrc?`<img src="${r.imgSrc}" style="width:100%;max-height:160px;object-fit:cover;border-radius:10px;margin-top:12px">`:''}<div class="sess-txt">${r.text.substring(0,400)}…</div>`).join('')}<div class="sess-actions"><button class="raction" onclick="viewSess('${x.id}')">Veure complet</button><button class="raction" style="color:var(--sr)" onclick="delSess('${x.id}')">Eliminar</button></div></div></div>`).join('');
-}
-function togSess(id){document.getElementById(id)?.classList.toggle('open');}
-function viewSess(id){
-  const s=sessions.find(x=>x.id===id);if(!s)return;goPage('diagnosis');
-  document.getElementById('resultArea').innerHTML=(s.results||[]).map(r=>{const cfg=modCfg[r.mod],fmt=r.text.replace(/(\d+\.\s+[A-ZÁÈÉÍÓÚÜÀÈÌÒÙÇ\s\/·'']+:)/g,'<strong>$1</strong>');return `<div class="result-card"><div class="r-header"><span>${cfg?.icon||'◉'}</span><span class="rbadge">${cfg?.label||r.mod}</span></div>${r.imgSrc?`<img src="${r.imgSrc}" style="width:100%;max-height:180px;object-fit:cover;border-radius:10px;margin-bottom:12px">`:''}
-  <div class="r-body">${fmt}</div></div>`;}).join('');
-}
-function delSess(id){if(!confirm('Eliminar?'))return;sessions=sessions.filter(s=>s.id!==id);localStorage.setItem('hol_sess',JSON.stringify(sessions));if(detailPtId)renderSessions(detailPtId,sortMode);updateStats();}
-function addAct(name,icon,time){activities.unshift({name,icon,time});if(activities.length>8)activities.pop();const el=document.getElementById('recentAct');el.innerHTML=activities.map(a=>`<div class="act-item"><div class="act-icon">${a.icon}</div><div class="act-text">${a.name}</div><div class="act-time">${a.time.split(',').slice(-1)[0].trim()}</div></div>`).join('');}
-function updateStats(){document.getElementById('sP').textContent=patients.length;document.getElementById('sS').textContent=sessions.length;const t=new Date().toDateString();document.getElementById('sT').textContent=sessions.filter(s=>new Date(s.date).toDateString()===t).length;}
+async function generaWord() {
+  if (!Object.keys(currentResults).length) return;
 
-updateStats();renderHomePts();renderDiagPts();renderCam();checkCross();
+  document.getElementById('modalWord').classList.add('open');
+
+  // Construir progress items
+  const metsCompletats = METODES.filter(m => currentResults[m.id]);
+  const progEl = document.getElementById('modalProg');
+  progEl.innerHTML = [
+    ...metsCompletats.map(m => `<div class="prog-item loading" id="pi-${m.id}"><div class="prog-icon">${m.icon}</div><span>${m.nom}</span><div class="prog-spin"></div><div class="prog-ok">✓</div></div>`),
+    `<div class="prog-item loading" id="pi-word"><div class="prog-icon">📄</div><span>Generant informe pacient</span><div class="prog-spin"></div><div class="prog-ok">✓</div></div>`,
+    `<div class="prog-item loading" id="pi-send"><div class="prog-icon">✅</div><span>Preparant per enviar</span><div class="prog-spin"></div><div class="prog-ok">✓</div></div>`,
+  ].join('');
+
+  document.getElementById('wordResult').classList.remove('show');
+
+  // Simular processament visual
+  for (const m of metsCompletats) {
+    await sleep(400);
+    document.getElementById('pi-'+m.id)?.classList.replace('loading','done');
+  }
+  await sleep(300);
+
+  // Generar informe complet amb IA
+  const pt = currentPt;
+  const resultsSummary = metsCompletats.map(m =>
+    `=== ${m.nom.toUpperCase()} ===\n${currentResults[m.id].text}`
+  ).join('\n\n');
+
+  const ptInfo = [pt.nom, pt.edat?pt.edat+' anys':'', pt.sexe, pt.motiu].filter(Boolean).join(' · ');
+
+  const prompt = `Ets un expert en medicina holística integrativa. Genera un INFORME PER AL PACIENT en català, senzill i accessible.
+
+DADES PACIENT: ${ptInfo}
+DATA: ${new Date().toLocaleDateString('ca-ES', {year:'numeric',month:'long',day:'numeric'})}
+PROFESSIONAL: Jordi Torres Isach · 677 010 458 · jtorres.cat · Crta. B-5107 S/N Masia Can Record
+
+DIAGNÒSTICS PER MÈTODE:
+${resultsSummary}
+
+Genera un informe per al pacient amb aquesta estructura EXACTA:
+
+🌿 INFORME DE SALUT HOLÍSTIC
+${ptInfo}
+
+📋 EL QUE HEM TROBAT
+[Explica en 3-4 punts senzills els principals signes trobats, amb paraules no tècniques. Cada punt amb emoji]
+
+💬 COM ET POTS ESTAR SENTINT
+[Llista de 5-6 símptomes habituals amb emojis, coherents amb el diagnòstic]
+
+🌱 QUÈ POTS FER PER MILLORAR
+[3 seccions: Alimentació, Suplements, Hàbits. Cada una amb 4-5 punts pràctics i concrets]
+
+🚦 EL TEU SEMÀFOR DE SALUT
+[3 línies: 💚 Bona notícia | 💛 Atenció moderada | 🧡 Prioritat]
+
+📅 PROPERA VISITA
+[Quan tornar, que portar, indicadors d'evolució]
+
+─────────────────────────
+Jordi Torres Isach · 677 010 458 · jtorres.cat
+Crta. B-5107 S/N · Masia Can Record
+Informe orientatiu complementari. No substitueix el diagnòstic mèdic.`;
+
+  try {
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-6',
+        max_tokens: 1000,
+        messages: [{role:'user', content: prompt}]
+      })
+    });
+    const data = await resp.json();
+    if (data.error) throw new Error(data.error.message);
+    fullInforme = data.content.map(b=>b.text||'').join('');
+
+    document.getElementById('pi-word')?.classList.replace('loading','done');
+    await sleep(300);
+    document.getElementById('pi-send')?.classList.replace('loading','done');
+    await sleep(200);
+
+    // Guardar a la sessió
+    const sessio = {
+      date: new Date().toISOString(),
+      mets: metsCompletats.map(m=>m.id),
+      results: currentResults,
+      informe: fullInforme,
+    };
+    if (!currentPt.sessions) currentPt.sessions = [];
+    currentPt.sessions.unshift(sessio);
+    savePts();
+
+    // Mostrar resultat
+    document.getElementById('wordNote').innerHTML = `Informe generat per a <strong>${pt.nom}</strong>.<br>Copia'l o envia'l directament per WhatsApp.`;
+    document.getElementById('wordResult').classList.add('show');
+    document.getElementById('modalSub').textContent = 'Informe llest! ✓';
+
+  } catch(err) {
+    document.getElementById('modalSub').textContent = 'Error: ' + err.message;
+  }
+}
+
+function copiaInforme() {
+  navigator.clipboard?.writeText(fullInforme)
+    .then(() => showToast('Informe copiat! ✓'))
+    .catch(() => {
+      // Fallback
+      const ta = document.createElement('textarea');
+      ta.value = fullInforme;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      ta.remove();
+      showToast('Informe copiat! ✓');
+    });
+}
+
+function comparteixWA() {
+  const text = `🌿 *Informe de Salut Holístic*\n*${currentPt?.nom}*\n\n${fullInforme}\n\n_Jordi Torres Isach · 677 010 458 · jtorres.cat_`;
+  window.open('https://wa.me/?text=' + encodeURIComponent(text));
+}
+
+function tancaModal() {
+  document.getElementById('modalWord').classList.remove('open');
+}
+
+// ════════════════════════════════════════
+// UTILS
+// ════════════════════════════════════════
+function goScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('on'));
+  document.getElementById(id)?.classList.add('on');
+}
+
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// ════════════════════════════════════════
+// INIT
+// ════════════════════════════════════════
+renderPtsList();
 </script>
 </body>
 </html>
