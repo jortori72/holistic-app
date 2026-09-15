@@ -428,24 +428,43 @@ function imgBlock(dataUrl) {
   return { type: 'image', source: { type: 'base64', media_type: getMediaType(dataUrl), data: dataUrl.split(',')[1] } };
 }
 
-async function callAI(system, userContent) {
-  var response = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      model: 'claude-sonnet-4-6',
-      max_tokens: 1200,
-      system: system,
-      messages: [{ role: 'user', content: userContent }]
-    })
-  });
-  if (!response.ok) {
-    var errData = await response.json().catch(function(){ return {}; });
-    throw new Error('Error API (' + response.status + '): ' + (errData.error ? errData.error.message : response.statusText));
+// URL del teu Cloudflare Worker (proxy que guarda la clau ANTHROPIC_KEY i evita problemes de CORS a Safari/iPhone)
+var PROXY_URL = 'https://holistic-proxy.osteopatia72.workers.dev/v1/messages';
+
+async function callAI(system, userContent, retries) {
+  if (retries === undefined) retries = 1;
+  var lastErr = null;
+  for (var attempt = 0; attempt <= retries; attempt++) {
+    try {
+      var response = await fetch(PROXY_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'anthropic-version': '2023-06-01'
+        },
+        body: JSON.stringify({
+          model: 'claude-sonnet-4-6',
+          max_tokens: 1200,
+          system: system,
+          messages: [{ role: 'user', content: userContent }]
+        })
+      });
+      if (!response.ok) {
+        var errData = await response.json().catch(function(){ return {}; });
+        throw new Error('Error API (' + response.status + '): ' + (errData.error ? errData.error.message : response.statusText));
+      }
+      var data = await response.json();
+      if (!data.content || !data.content[0] || !data.content[0].text) throw new Error('Resposta buida de la IA');
+      return data.content[0].text;
+    } catch (e) {
+      lastErr = e;
+      if (attempt < retries) {
+        await new Promise(function(res){ setTimeout(res, 1200); }); // petita pausa abans de reintentar
+        continue;
+      }
+    }
   }
-  var data = await response.json();
-  if (!data.content || !data.content[0] || !data.content[0].text) throw new Error('Resposta buida de la IA');
-  return data.content[0].text;
+  throw lastErr;
 }
 
 async function runDiagnosis() {
