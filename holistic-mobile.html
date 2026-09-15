@@ -313,12 +313,38 @@ function takePh(i, mode) {
   document.getElementById(mode === 'cam' ? 'ic' + i : 'ig' + i).click();
 }
 
+// Redueix mida i pes de la imatge abans d'enviar-la (evita peticions massa pesades -> error 502)
+function compressImage(dataUrl, maxDim, quality) {
+  return new Promise(function(resolve) {
+    var img = new Image();
+    img.onload = function() {
+      var w = img.width, h = img.height;
+      if (w > maxDim || h > maxDim) {
+        if (w >= h) { h = Math.round(h * maxDim / w); w = maxDim; }
+        else { w = Math.round(w * maxDim / h); h = maxDim; }
+      }
+      var canvas = document.createElement('canvas');
+      canvas.width = w; canvas.height = h;
+      var ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, w, h);
+      try {
+        resolve(canvas.toDataURL('image/jpeg', quality || 0.72));
+      } catch (e) {
+        resolve(dataUrl); // si falla la compressió, s'envia l'original
+      }
+    };
+    img.onerror = function() { resolve(dataUrl); };
+    img.src = dataUrl;
+  });
+}
+
 function phSel(i, inp) {
   if (!inp.files || !inp.files[0]) return;
   var reader = new FileReader();
   reader.onload = function(e) {
-    photos[i] = e.target.result;
-    document.getElementById('p' + i).innerHTML = '<img src="' + e.target.result + '" alt="foto">';
+    compressImage(e.target.result, 1024, 0.72).then(function(compressed) {
+    photos[i] = compressed;
+    document.getElementById('p' + i).innerHTML = '<img src="' + compressed + '" alt="foto">';
     var card = document.getElementById('c' + i);
     card.className = 'card done';
     document.getElementById('s' + i).textContent = '✅';
@@ -336,6 +362,7 @@ function phSel(i, inp) {
       }, 300);
     }
     checkAllPhotos();
+    });
   };
   reader.readAsDataURL(inp.files[0]);
 }
@@ -380,10 +407,12 @@ function analyticSel(inp) {
   }
   var reader = new FileReader();
   reader.onload = function(e) {
-    analyticImage = e.target.result;
-    document.getElementById('analyticImgWrap').innerHTML = '<img src="' + e.target.result + '" alt="analítica" style="width:100%;border-radius:8px;margin-top:6px">';
-    document.getElementById('prevAnalytic').classList.add('vis');
-    markAnalyticDone('📸 Imatge analítica afegida');
+    compressImage(e.target.result, 1400, 0.75).then(function(compressed) {
+      analyticImage = compressed;
+      document.getElementById('analyticImgWrap').innerHTML = '<img src="' + compressed + '" alt="analítica" style="width:100%;border-radius:8px;margin-top:6px">';
+      document.getElementById('prevAnalytic').classList.add('vis');
+      markAnalyticDone('📸 Imatge analítica afegida');
+    });
   };
   reader.readAsDataURL(file);
 }
