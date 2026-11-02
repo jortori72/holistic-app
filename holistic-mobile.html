@@ -1,1 +1,754 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#1a1a2e">
+<title>Valoració Holística Integrativa</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;background:#f0f0f0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
+.app{max-width:480px;margin:0 auto;background:#f0f0f0;min-height:100vh;padding-bottom:30px}
 
+.hdr{background:linear-gradient(135deg,#1a1a2e 0%,#16213e 100%);color:white;padding:20px 20px 16px;text-align:center;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(0,0,0,.3)}
+.hdr h1{font-size:18px;font-weight:600;color:white;letter-spacing:-.3px}
+.hdr p{font-size:11px;color:rgba(255,255,255,.55);margin-top:3px}
+
+.experts-strip{display:flex;gap:6px;padding:12px 14px;background:white;overflow-x:auto;border-bottom:1px solid #e5e7eb;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.experts-strip::-webkit-scrollbar{display:none}
+.expert-badge{display:flex;flex-direction:column;align-items:center;gap:3px;min-width:56px;padding:8px 4px;border-radius:10px;background:#f9fafb;border:1px solid #e5e7eb;flex-shrink:0}
+.expert-badge .ico{font-size:18px}
+.expert-badge .lbl{font-size:9px;color:#6b7280;text-align:center;line-height:1.2;font-weight:500}
+
+.patient-sec{padding:14px 16px;background:white;border-bottom:1px solid #e5e7eb;margin-bottom:8px}
+.patient-sec label{font-size:11px;color:#6b7280;font-weight:500;text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:6px}
+.row{display:flex;gap:10px}
+.row input{flex:1;font-size:15px;padding:11px 13px;border:1px solid #e5e7eb;border-radius:10px;background:#f9fafb;color:#111;-webkit-appearance:none;outline:none}
+.row input:focus{border-color:#4f46e5;background:white}
+.row input::placeholder{color:#9ca3af}
+.age-in{width:74px;flex:none!important;text-align:center}
+
+.steps{padding:0 12px}
+.card{background:white;border:1.5px solid #e5e7eb;border-radius:14px;margin-bottom:10px;overflow:hidden;transition:border-color .2s,opacity .2s;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+.card.active{border-color:#4f46e5;box-shadow:0 0 0 3px rgba(79,70,229,.1)}
+.card.done{border-color:#16a34a;opacity:.85}
+.card.locked{opacity:.38;pointer-events:none}
+.card.optional{border:1.5px dashed #e5e7eb;opacity:1;pointer-events:auto}
+.card.optional.has-data{border:1.5px solid #0891b2;box-shadow:0 0 0 3px rgba(8,145,178,.1)}
+.card.optional.skipped{opacity:.5}
+
+.chdr{display:flex;align-items:center;gap:12px;padding:15px 16px;cursor:pointer;-webkit-user-select:none;user-select:none}
+.cico{font-size:26px;width:36px;text-align:center;flex-shrink:0}
+.cinfo{flex:1}
+.ctitle{font-size:15px;font-weight:600;color:#111}
+.csub{font-size:11px;color:#6b7280;margin-top:2px}
+.cst{font-size:20px;min-width:24px;text-align:center}
+
+.cbody{display:none;padding:0 16px 16px}
+.card.active .cbody{display:block}
+.card.optional .cbody{display:none}
+.card.optional.open .cbody{display:block}
+
+.tip{background:#eff6ff;border-radius:8px;padding:10px 12px;margin-bottom:12px;font-size:12px;color:#1d4ed8;display:flex;gap:8px;line-height:1.5;border-left:3px solid #3b82f6}
+.tip i{flex-shrink:0;margin-top:1px;font-size:14px}
+.tip.green{background:#f0fdf4;color:#15803d;border-left-color:#22c55e}
+.tip.amber{background:#fffbeb;color:#b45309;border-left-color:#f59e0b}
+
+.prev{width:100%;height:170px;border-radius:10px;border:2px dashed #d1d5db;display:flex;align-items:center;justify-content:center;background:#f9fafb;margin-bottom:12px;overflow:hidden}
+.prev img{width:100%;height:100%;object-fit:cover;border-radius:8px}
+.prev .ph{text-align:center;color:#9ca3af}
+.prev .ph i{font-size:32px;display:block;margin-bottom:6px;opacity:.4}
+.prev .ph span{font-size:12px}
+
+.btn-cam{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:13px;border:none;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;margin-bottom:9px;transition:transform .1s,opacity .1s}
+.btn-cam:active{transform:scale(.97);opacity:.85}
+.btn-primary{background:#4f46e5;color:white}
+.btn-secondary{background:#f3f4f6;color:#374151;border:1px solid #e5e7eb}
+.btn-teal{background:#0891b2;color:white}
+.btn-skip{background:#f9fafb;color:#9ca3af;border:1px solid #e5e7eb;font-size:13px;padding:10px}
+
+input[type=file]{display:none}
+
+.analytic-area{width:100%;min-height:110px;font-size:13px;padding:11px 13px;border:1px solid #e5e7eb;border-radius:10px;background:#f9fafb;color:#111;resize:vertical;margin-bottom:10px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;line-height:1.6}
+.analytic-area:focus{border-color:#0891b2;background:white;outline:none}
+.analytic-area::placeholder{color:#9ca3af}
+
+.prev-analytic{background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:10px 12px;margin-bottom:10px;font-size:12px;color:#15803d;display:none}
+.prev-analytic.vis{display:block}
+.prev-analytic .anlbl{font-weight:600;margin-bottom:4px;font-size:12px}
+.prev-analytic img{width:100%;border-radius:8px;margin-top:6px}
+
+.badge-opt{display:inline-block;background:#e0f2fe;color:#0369a1;font-size:10px;font-weight:600;padding:2px 7px;border-radius:20px;margin-left:6px;vertical-align:middle}
+
+.opt-toggle{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;padding:11px;background:transparent;color:#0891b2;border:1px dashed #0891b2;border-radius:10px;font-size:13px;font-weight:500;cursor:pointer;margin-bottom:6px}
+.opt-toggle:active{opacity:.75}
+
+.gen-sec{display:none;padding:10px 12px 4px}
+.gen-sec.vis{display:block}
+.gen-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:16px;background:#1a1a2e;color:white;border:none;border-radius:12px;font-size:16px;font-weight:600;cursor:pointer;margin-bottom:9px;transition:opacity .2s}
+.gen-btn:active{opacity:.82}
+.gen-btn:disabled{opacity:.4;cursor:not-allowed}
+.reset-btn{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;padding:11px;background:#f9fafb;color:#6b7280;border:1px solid #e5e7eb;border-radius:10px;font-size:13px;cursor:pointer}
+
+.pbar-wrap{padding:0 12px 6px;display:none}
+.pbar-wrap.vis{display:block}
+.pbar{height:4px;background:#e5e7eb;border-radius:2px;overflow:hidden}
+.pfill{height:100%;background:linear-gradient(90deg,#4f46e5,#7c3aed);border-radius:2px;transition:width .7s ease}
+.phase-lbl{text-align:center;font-size:11px;color:#6b7280;padding:5px 12px 8px;display:none}
+.phase-lbl.vis{display:block}
+
+.result{background:white;border-radius:14px;margin:0 12px 12px;display:none;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.result.vis{display:block}
+.rtabs{display:flex;border-bottom:1px solid #e5e7eb;background:white}
+.rtab{flex:1;padding:12px 4px;font-size:11px;font-weight:600;text-align:center;cursor:pointer;color:#6b7280;border-bottom:2.5px solid transparent;transition:color .15s}
+.rtab.active{color:#4f46e5;border-bottom-color:#4f46e5}
+.rpanel{display:none;padding:16px}
+.rpanel.active{display:block}
+.rpanel pre,.result-text{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:13.5px;color:#374151;line-height:1.78;white-space:pre-wrap;word-break:break-word}
+
+.exp-card{background:#f9fafb;border-radius:10px;padding:12px 14px;border-left:4px solid #4f46e5;margin-bottom:12px}
+.exp-card h4{font-size:13px;font-weight:700;margin-bottom:6px;display:flex;align-items:center;gap:7px}
+.exp-card .exp-txt{font-size:12.5px;color:#4b5563;line-height:1.7}
+
+.loading-msg{font-size:14px;color:#6b7280;text-align:center;padding:28px 16px;animation:pulse 1.5s infinite ease-in-out}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+
+.footer{text-align:center;padding:16px;font-size:11px;color:#9ca3af}
+.footer span{display:block;margin-top:3px;color:#6b7280;font-weight:500}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <div class="hdr">
+    <h1>🌿 Valoració Holística Integrativa</h1>
+    <p>Eina orientativa de suport al terapeuta · anàlisi creuada</p>
+  </div>
+
+  <div class="experts-strip">
+    <div class="expert-badge"><span class="ico">🧿</span><span class="lbl">Iridologia</span></div>
+    <div class="expert-badge"><span class="ico">☯️</span><span class="lbl">MTC</span></div>
+    <div class="expert-badge"><span class="ico">🌿</span><span class="lbl">Ayurveda</span></div>
+    <div class="expert-badge"><span class="ico">🧠</span><span class="lbl">PNI</span></div>
+    <div class="expert-badge"><span class="ico">🖐</span><span class="lbl">Osteopatia</span></div>
+    <div class="expert-badge"><span class="ico">💊</span><span class="lbl">Funcional</span></div>
+    <div class="expert-badge"><span class="ico">👂</span><span class="lbl">Auric.</span></div>
+    <div class="expert-badge"><span class="ico">💅</span><span class="lbl">Onique.</span></div>
+    <div class="expert-badge"><span class="ico">🧪</span><span class="lbl">Analítica</span></div>
+  </div>
+
+  <div class="patient-sec">
+    <label>Dades del pacient</label>
+    <div class="row">
+      <input type="text" id="nom" placeholder="Nom del pacient" autocomplete="off"/>
+      <input type="number" id="edat" placeholder="Edat" class="age-in" min="1" max="120"/>
+    </div>
+  </div>
+
+  <div class="steps">
+
+    <!-- CARD 0: ULLS -->
+    <div class="card active" id="c0">
+      <div class="chdr">
+        <div class="cico">👁</div>
+        <div class="cinfo"><div class="ctitle">Iris i Ulls</div><div class="csub">Iridologia · MTC · lectura ocular</div></div>
+        <div class="cst" id="s0">📷</div>
+      </div>
+      <div class="cbody">
+        <div class="tip"><i class="ti ti-info-circle"></i>Ulls ben oberts, llum natural. Càmera frontal a 20-25 cm. Captura ambdós ulls clarament.</div>
+        <div class="prev" id="p0"><div class="ph"><i class="ti ti-eye"></i><span>Foto de l'iris aquí</span></div></div>
+        <button class="btn-cam btn-primary" onclick="takePh(0,'cam')"><i class="ti ti-camera"></i> Fer foto ara</button>
+        <button class="btn-cam btn-secondary" onclick="takePh(0,'gal')"><i class="ti ti-photo"></i> Triar de la galeria</button>
+        <input type="file" accept="image/*" capture="user" id="ic0" onchange="phSel(0,this)">
+        <input type="file" accept="image/*" id="ig0" onchange="phSel(0,this)">
+      </div>
+    </div>
+
+    <!-- CARD 1: LLENGUA -->
+    <div class="card locked" id="c1">
+      <div class="chdr">
+        <div class="cico">🫦</div>
+        <div class="cinfo"><div class="ctitle">Llengua</div><div class="csub">MTC · Ayurveda · lectura lingual</div></div>
+        <div class="cst" id="s1">🔒</div>
+      </div>
+      <div class="cbody">
+        <div class="tip"><i class="ti ti-info-circle"></i>Llengua ben estesa. Ideal en dejú o 30 min sense menjar. Llum directa dins la boca.</div>
+        <div class="prev" id="p1"><div class="ph"><i class="ti ti-mouth"></i><span>Foto de la llengua aquí</span></div></div>
+        <button class="btn-cam btn-primary" onclick="takePh(1,'cam')"><i class="ti ti-camera"></i> Fer foto ara</button>
+        <button class="btn-cam btn-secondary" onclick="takePh(1,'gal')"><i class="ti ti-photo"></i> Triar de la galeria</button>
+        <input type="file" accept="image/*" capture="user" id="ic1" onchange="phSel(1,this)">
+        <input type="file" accept="image/*" id="ig1" onchange="phSel(1,this)">
+      </div>
+    </div>
+
+    <!-- CARD 2: UNGLES -->
+    <div class="card locked" id="c2">
+      <div class="chdr">
+        <div class="cico">💅</div>
+        <div class="cinfo"><div class="ctitle">Ungles i Mans</div><div class="csub">Onicodiagnosi · MTC · funcional</div></div>
+        <div class="cst" id="s2">🔒</div>
+      </div>
+      <div class="cbody">
+        <div class="tip"><i class="ti ti-info-circle"></i>Les dues mans obertes, llum natural. Sense esmaltat. Mostrar les lúnules clarament.</div>
+        <div class="prev" id="p2"><div class="ph"><i class="ti ti-hand-finger"></i><span>Foto de les ungles aquí</span></div></div>
+        <button class="btn-cam btn-primary" onclick="takePh(2,'cam')"><i class="ti ti-camera"></i> Fer foto ara</button>
+        <button class="btn-cam btn-secondary" onclick="takePh(2,'gal')"><i class="ti ti-photo"></i> Triar de la galeria</button>
+        <input type="file" accept="image/*" capture="environment" id="ic2" onchange="phSel(2,this)">
+        <input type="file" accept="image/*" id="ig2" onchange="phSel(2,this)">
+      </div>
+    </div>
+
+    <!-- CARD 3: ORELLA -->
+    <div class="card locked" id="c3">
+      <div class="chdr">
+        <div class="cico">👂</div>
+        <div class="cinfo"><div class="ctitle">Orella</div><div class="csub">Auriculoteràpia · signe de Frank</div></div>
+        <div class="cst" id="s3">🔒</div>
+      </div>
+      <div class="cbody">
+        <div class="tip"><i class="ti ti-info-circle"></i>Orella dreta, pavelló complet visible, lòbul sense plec. Allunyar el cabell. Bona il·luminació.</div>
+        <div class="prev" id="p3"><div class="ph"><i class="ti ti-ear"></i><span>Foto de l'orella aquí</span></div></div>
+        <button class="btn-cam btn-primary" onclick="takePh(3,'cam')"><i class="ti ti-camera"></i> Fer foto ara</button>
+        <button class="btn-cam btn-secondary" onclick="takePh(3,'gal')"><i class="ti ti-photo"></i> Triar de la galeria</button>
+        <input type="file" accept="image/*" capture="environment" id="ic3" onchange="phSel(3,this)">
+        <input type="file" accept="image/*" id="ig3" onchange="phSel(3,this)">
+      </div>
+    </div>
+
+    <!-- CARD 4: ANALÍTICA (OPCIONAL) -->
+    <div class="card optional" id="c4">
+      <div class="chdr" onclick="toggleAnalytic()">
+        <div class="cico">🧪</div>
+        <div class="cinfo">
+          <div class="ctitle">Analítica de Sang <span class="badge-opt">OPCIONAL</span></div>
+          <div class="csub">Creuament holístic · valors funcionals</div>
+        </div>
+        <div class="cst" id="s4">➕</div>
+      </div>
+      <div class="cbody" id="analyticBody">
+        <div class="tip green"><i class="ti ti-trending-up"></i>Si tens analítica de sang, la valoració serà més completa. Pots escriure els valors, fer foto del document o pujar el PDF.</div>
+
+        <div class="tip amber"><i class="ti ti-bulb"></i>Escriu els valors que tinguis: glucosa, colesterol, ferritina, vitamina D, TSH, HbA1c, B12... No cal posar-los tots.</div>
+
+        <textarea class="analytic-area" id="analyticText" placeholder="Exemples:
+Glucosa: 95 mg/dL
+HbA1c: 5.8%
+Colesterol total: 210
+LDL: 145 / HDL: 52
+Triglicèrids: 120
+Vitamina D: 22 ng/mL
+TSH: 3.8 mUI/L
+Ferritina: 18 ng/mL
+B12: 280 pg/mL
+..."></textarea>
+
+        <div class="prev-analytic" id="prevAnalytic">
+          <div class="anlbl">📋 Imatge analítica adjuntada</div>
+          <div id="analyticImgWrap"></div>
+        </div>
+
+        <button class="btn-cam btn-teal" onclick="takeAnalytic('cam')"><i class="ti ti-camera"></i> Foto del document analítica</button>
+        <button class="btn-cam btn-secondary" onclick="takeAnalytic('gal')"><i class="ti ti-file-upload"></i> Pujar foto / PDF analítica</button>
+        <input type="file" accept="image/*,application/pdf" capture="environment" id="icAn" onchange="analyticSel(this)">
+        <input type="file" accept="image/*,application/pdf" id="igAn" onchange="analyticSel(this)">
+
+        <button class="btn-cam btn-skip" onclick="skipAnalytic()"><i class="ti ti-x"></i> Continuar sense analítica</button>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="gen-sec" id="genSec">
+    <button class="gen-btn" id="genBtn" onclick="runDiagnosis()">
+      <i class="ti ti-brain"></i> Iniciar anàlisi expert creuada
+    </button>
+    <button class="reset-btn" onclick="resetAll()">
+      <i class="ti ti-refresh"></i> Nou pacient
+    </button>
+  </div>
+
+  <div class="pbar-wrap" id="pbarWrap">
+    <div class="pbar"><div class="pfill" id="pfill" style="width:0%"></div></div>
+  </div>
+  <div class="phase-lbl" id="phaseLbl">Inicialitzant...</div>
+
+  <div class="result" id="result">
+    <div class="rtabs">
+      <div class="rtab active" onclick="showTab(0)">Integrat</div>
+      <div class="rtab" onclick="showTab(1)">Per expert</div>
+      <div class="rtab" onclick="showTab(2)">Protocol</div>
+    </div>
+    <div class="rpanel active" id="tab0">
+      <div class="loading-msg" id="loadMsg">Analitzant amb l'equip d'experts...</div>
+      <pre class="result-text" id="txtIntegrat" style="display:none"></pre>
+    </div>
+    <div class="rpanel" id="tab1">
+      <div id="expertsContent"></div>
+    </div>
+    <div class="rpanel" id="tab2">
+      <pre class="result-text" id="txtProtocol"></pre>
+    </div>
+  </div>
+
+  <div class="footer">
+    Jordi Torres Isach · Masia Can Record
+    <span>677 010 458 · jtorres.cat</span>
+  </div>
+
+</div>
+
+<script>
+var photos = [null, null, null, null];
+var analyticText = '';
+var analyticImage = null;
+var analyticPdf = null;
+var analyticOpen = false;
+var analyticHasData = false;
+var icons = ['ti-eye','ti-mouth','ti-hand-finger','ti-ear'];
+var previews = ["Foto de l'iris aquí","Foto de la llengua aquí","Foto de les ungles aquí","Foto de l'orella aquí"];
+
+function takePh(i, mode) {
+  document.getElementById(mode === 'cam' ? 'ic' + i : 'ig' + i).click();
+}
+
+// Redueix mida i pes de la imatge abans d'enviar-la (evita peticions massa pesades -> error 502)
+function compressImage(dataUrl, maxDim, quality) {
+  return new Promise(function(resolve) {
+    var img = new Image();
+    img.onload = function() {
+      var w = img.width, h = img.height;
+      if (w > maxDim || h > maxDim) {
+        if (w >= h) { h = Math.round(h * maxDim / w); w = maxDim; }
+        else { w = Math.round(w * maxDim / h); h = maxDim; }
+      }
+      var canvas = document.createElement('canvas');
+      canvas.width = w; canvas.height = h;
+      var ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, w, h);
+      try {
+        resolve(canvas.toDataURL('image/jpeg', quality || 0.72));
+      } catch (e) {
+        resolve(dataUrl); // si falla la compressió, s'envia l'original
+      }
+    };
+    img.onerror = function() { resolve(dataUrl); };
+    img.src = dataUrl;
+  });
+}
+
+function phSel(i, inp) {
+  if (!inp.files || !inp.files[0]) return;
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    compressImage(e.target.result, 1024, 0.72).then(function(compressed) {
+    photos[i] = compressed;
+    document.getElementById('p' + i).innerHTML = '<img src="' + compressed + '" alt="foto">';
+    var card = document.getElementById('c' + i);
+    card.className = 'card done';
+    document.getElementById('s' + i).textContent = '✅';
+    card.querySelector('.cbody').style.display = 'none';
+    var next = i + 1;
+    if (next < 4) {
+      var nc = document.getElementById('c' + next);
+      nc.className = 'card active';
+      setTimeout(function() { nc.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }, 150);
+    }
+    if (next === 4) {
+      // Quan arriba a l'orella, obrir l'opcional d'analítica
+      setTimeout(function() {
+        document.getElementById('c4').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }, 300);
+    }
+    checkAllPhotos();
+    });
+  };
+  reader.readAsDataURL(inp.files[0]);
+}
+
+function checkAllPhotos() {
+  var done = photos.filter(function(p){ return p !== null; }).length;
+  if (done === 4) {
+    document.getElementById('genSec').classList.add('vis');
+    setTimeout(function() {
+      document.getElementById('genSec').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }, 400);
+  }
+}
+
+function toggleAnalytic() {
+  var card = document.getElementById('c4');
+  var body = document.getElementById('analyticBody');
+  analyticOpen = !analyticOpen;
+  if (analyticOpen) {
+    card.classList.add('open');
+    body.style.display = 'block';
+    document.getElementById('s4').textContent = '🔽';
+  } else {
+    card.classList.remove('open');
+    body.style.display = 'none';
+    document.getElementById('s4').textContent = analyticHasData ? '✅' : '➕';
+  }
+}
+
+function takeAnalytic(mode) {
+  document.getElementById(mode === 'cam' ? 'icAn' : 'igAn').click();
+}
+
+function analyticSel(inp) {
+  if (!inp.files || !inp.files[0]) return;
+  var file = inp.files[0];
+  if (file.type === 'application/pdf') {
+    // El PDF s'envia sencer a la IA perquè pugui llegir els valors reals
+    if (file.size > 4 * 1024 * 1024) {
+      alert('El PDF és massa gran (més de 4 MB). Fes una foto del document o escriu els valors a mà.');
+      inp.value = '';
+      return;
+    }
+    var pdfReader = new FileReader();
+    pdfReader.onload = function(e) {
+      analyticPdf = e.target.result.split(',')[1];
+      document.getElementById('analyticImgWrap').innerHTML = '<div style="padding:10px;background:#f3f4f6;border-radius:8px;margin-top:6px;font-size:13px">📄 ' + file.name.replace(/</g,'&lt;') + '</div>';
+      document.getElementById('prevAnalytic').classList.add('vis');
+      markAnalyticDone('📄 PDF: ' + file.name);
+    };
+    pdfReader.readAsDataURL(file);
+    return;
+  }
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    compressImage(e.target.result, 1400, 0.75).then(function(compressed) {
+      analyticImage = compressed;
+      document.getElementById('analyticImgWrap').innerHTML = '<img src="' + compressed + '" alt="analítica" style="width:100%;border-radius:8px;margin-top:6px">';
+      document.getElementById('prevAnalytic').classList.add('vis');
+      markAnalyticDone('📸 Imatge analítica afegida');
+    });
+  };
+  reader.readAsDataURL(file);
+}
+
+function markAnalyticDone(msg) {
+  analyticHasData = true;
+  var card = document.getElementById('c4');
+  card.classList.add('has-data');
+  document.getElementById('s4').textContent = '✅';
+}
+
+function skipAnalytic() {
+  analyticHasData = false;
+  analyticImage = null;
+  analyticPdf = null;
+  analyticText = '';
+  document.getElementById('analyticText').value = '';
+  var card = document.getElementById('c4');
+  card.classList.remove('has-data','open');
+  card.classList.add('skipped');
+  document.getElementById('analyticBody').style.display = 'none';
+  document.getElementById('s4').textContent = '⏭';
+  analyticOpen = false;
+}
+
+function showTab(idx) {
+  document.querySelectorAll('.rtab').forEach(function(t, i) { t.classList.toggle('active', i === idx); });
+  document.querySelectorAll('.rpanel').forEach(function(p, i) { p.classList.toggle('active', i === idx); });
+}
+
+function setPhase(txt, pct) {
+  document.getElementById('phaseLbl').textContent = txt;
+  document.getElementById('pfill').style.width = pct + '%';
+}
+
+function getMediaType(dataUrl) {
+  if (dataUrl.indexOf('image/png') !== -1) return 'image/png';
+  if (dataUrl.indexOf('image/webp') !== -1) return 'image/webp';
+  return 'image/jpeg';
+}
+
+function imgBlock(dataUrl) {
+  return { type: 'image', source: { type: 'base64', media_type: getMediaType(dataUrl), data: dataUrl.split(',')[1] } };
+}
+
+// URL del teu Cloudflare Worker (proxy que guarda la clau ANTHROPIC_KEY i evita problemes de CORS a Safari/iPhone)
+var PROXY_URL = 'https://holistic-proxy.osteopatia72.workers.dev/v1/messages';
+
+async function callAI(system, userContent, opts) {
+  opts = opts || {};
+  var retries = (opts.retries === undefined) ? 1 : opts.retries;
+  var maxTokens = opts.maxTokens || 1200;
+  var lastErr = null;
+  for (var attempt = 0; attempt <= retries; attempt++) {
+    try {
+      var response = await fetch(PROXY_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'anthropic-version': '2023-06-01'
+        },
+        body: JSON.stringify({
+          model: 'claude-sonnet-4-6',
+          max_tokens: maxTokens,
+          system: system,
+          messages: [{ role: 'user', content: userContent }]
+        })
+      });
+      if (!response.ok) {
+        var errData = await response.json().catch(function(){ return {}; });
+        throw new Error('Error API (' + response.status + '): ' + (errData.error ? errData.error.message : response.statusText));
+      }
+      var data = await response.json();
+      if (!data.content || !data.content[0] || !data.content[0].text) throw new Error('Resposta buida de la IA');
+      return data.content[0].text;
+    } catch (e) {
+      lastErr = e;
+      if (attempt < retries) {
+        await new Promise(function(res){ setTimeout(res, 1200); }); // petita pausa abans de reintentar
+        continue;
+      }
+    }
+  }
+  throw lastErr;
+}
+
+// Normes comunes per a tots els experts: eina orientativa, llenguatge prudent i derivacions
+var NORMES = '\n\nNORMES OBLIGATÒRIES:\n' +
+  '1) Ets una eina de suport ORIENTATIU per a un terapeuta professional. No fas diagnòstics mèdics.\n' +
+  '2) Parteix NOMÉS de l\'OBSERVACIÓ OBJECTIVA facilitada. No contradiguis ni afegeixis signes que no hi constin.\n' +
+  '3) Si un mètode consta com a "NO AVALUABLE" o un signe com a "no visible", no l\'interpretis.\n' +
+  '4) Llenguatge prudent: "compatible amb", "suggereix", "caldria valorar". Mai afirmacions tancades sobre òrgans o malalties.\n' +
+  '5) Indica el grau de confiança de cada troballa: (clar), (probable) o (dubtós).\n' +
+  '6) Si hi ha signes d\'alerta (signe de Frank, glossitis atròfica, ungles en vidre de rellotge, escleròtica groguenca, cianosi, lesions sospitoses o valors analítics molt alterats), recomana explícitament valoració mèdica.\n' +
+  '7) Analítica: usa NOMÉS els valors que apareixen al document. No inventis cap valor. Si no es llegeix bé, digues-ho.\n' +
+  '8) Respon íntegrament en català.';
+
+async function runDiagnosis() {
+  var nom = document.getElementById('nom').value.trim() || 'Pacient';
+  var edat = document.getElementById('edat').value || 'desconeguda';
+  var txtAnalytic = document.getElementById('analyticText').value.trim();
+  var btn = document.getElementById('genBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<i class="ti ti-loader"></i> Analitzant...';
+
+  document.getElementById('pbarWrap').classList.add('vis');
+  document.getElementById('phaseLbl').classList.add('vis');
+  document.getElementById('result').classList.add('vis');
+  document.getElementById('loadMsg').style.display = 'block';
+  document.getElementById('txtIntegrat').style.display = 'none';
+  document.getElementById('txtIntegrat').textContent = '';
+  document.getElementById('txtProtocol').textContent = '';
+  document.getElementById('expertsContent').innerHTML = '';
+  showTab(0);
+
+  // Imatges: només s'envien les que existeixen
+  var etiquetes = ['IMATGE 1 — Iris i ulls', 'IMATGE 2 — Llengua', 'IMATGE 3 — Ungles i mans', 'IMATGE 4 — Orella (pavelló auricular)'];
+  var imageBlocks = [{ type: 'text', text: 'Pacient: ' + nom + ', ' + edat + ' anys.' }];
+  for (var k = 0; k < 4; k++) {
+    if (photos[k]) {
+      imageBlocks.push({ type: 'text', text: etiquetes[k] + ':' });
+      imageBlocks.push(imgBlock(photos[k]));
+    } else {
+      imageBlocks.push({ type: 'text', text: etiquetes[k] + ': NO S\'HA APORTAT IMATGE.' });
+    }
+  }
+
+  // Analítica: text, foto i/o PDF real (abans el PDF no arribava a la IA)
+  var hasAnalytic = (txtAnalytic.length > 10) || (analyticImage !== null) || (analyticPdf !== null);
+  var analyticBlocks = [];
+  var analyticContext = '';
+  if (hasAnalytic) {
+    analyticContext = '\n\nANALÍTICA DE SANG DISPONIBLE — integra-la a la valoració:\n';
+    if (txtAnalytic) analyticContext += txtAnalytic;
+    if (analyticImage) {
+      analyticBlocks.push({ type: 'text', text: 'Document d\'analítica de sang (imatge):' });
+      analyticBlocks.push(imgBlock(analyticImage));
+    }
+    if (analyticPdf) {
+      analyticBlocks.push({ type: 'text', text: 'Document d\'analítica de sang (PDF):' });
+      analyticBlocks.push({ type: 'document', source: { type: 'base64', media_type: 'application/pdf', data: analyticPdf } });
+    }
+  }
+
+  var expertsData = {};
+
+  try {
+    // PAS 1 — Observació objectiva: una sola descripció de les fotos de la qual parteixen tots els experts
+    setPhase('Observant les imatges...', 8);
+    expertsData.observacio = await callAI(
+      'Ets un observador clínic rigorós. La teva ÚNICA feina és DESCRIURE objectivament el que es veu a les fotos. No interpretes, no fas diagnòstics i no relaciones signes amb òrgans. Respon íntegrament en català.',
+      imageBlocks.concat([{ type: 'text', text:
+        'Descriu objectivament cada imatge amb aquest format:\n\n' +
+        'Per a CADA imatge, comença amb: QUALITAT: bona / acceptable / insuficient (i el motiu: llum, enfocament, reflexos, filtres, angle, distància). Si és insuficient o no s\'ha aportat, escriu "NO AVALUABLE" i passa a la següent.\n\n' +
+        '👁 IRIS I ULLS: color i densitat de la trama de cada iris; signes visibles (taques, anells, lacunes) només si es veuen clarament; escleròtica (color, vasos); parpelles i zona periocular (bosses, coloració, solcs).\n' +
+        '👅 LLENGUA: color del cos; saburra (color, gruix i distribució per zones: punta, vores, centre, arrel); forma i mida; fissures (localització i profunditat); marques dentals a les vores; punts vermells; humitat; zones llises o sense papil·les.\n' +
+        '💅 UNGLES I MANS: lúnules (presents/absents/mida, per dit si es pot); color del llit ungueal; estries (longitudinals/transversals); forma i corbatura; cutícules; pell, venes, coloració i articulacions de les mans.\n' +
+        '👂 ORELLA: plec diagonal del lòbul (present / absent / no visible); coloració; morfologia; marques o punts visibles.\n\n' +
+        '🔎 COHERÈNCIA: indica si les imatges semblen correspondre a la mateixa persona i si l\'aparença és coherent amb l\'edat indicada (' + edat + ' anys). Si hi ha dubtes, digues-ho clarament.\n\n' +
+        'Si alguna cosa no es veu bé, escriu "no visible" en lloc de suposar-la. Llenguatge descriptiu, sense interpretació. Màxim 450 paraules.' }]),
+      { maxTokens: 1600 }
+    );
+
+    var obsBlock = '\n\n=== OBSERVACIÓ OBJECTIVA DE LES IMATGES (punt de partida obligatori) ===\n' + expertsData.observacio + '\n=== FI DE L\'OBSERVACIÓ ===\n';
+    function expertContent(instruccions) {
+      return analyticBlocks.concat([{ type: 'text', text: 'Pacient: ' + nom + ', ' + edat + ' anys.' + obsBlock + analyticContext + '\n\n' + instruccions }]);
+    }
+
+    // PAS 2 — Els 5 experts treballen en paral·lel (molt més ràpid)
+    var fets = 0;
+    setPhase('5 experts analitzant en paral·lel...', 20);
+    function avanca(r) { fets++; setPhase('Experts: ' + fets + ' de 5 completats...', 20 + fets * 11); return r; }
+
+    var resultats = await Promise.all([
+      callAI(
+        'Ets un terapeuta expert en Medicina Tradicional Xinesa (MTC) i Iridologia.' + NORMES,
+        expertContent('Valora el cas des de la MTC i la Iridologia. Inclou:\n1. IRIDOLOGIA: constitució (hematogènica/limfàtica/mixta) i signes rellevants\n2. MTC LLENGUA: lectura del cos lingual, la saburra i les fissures\n3. MTC ULLS: zona periocular\n4. PATRONS MTC: 2-4 patrons compatibles (nom pinyin + traducció) amb grau de confiança\n5. SISTEMES A VALORAR per prioritat\n' + (hasAnalytic ? '6. CORRELACIÓ ANALÍTICA: com els valors confirmen o matisen la lectura MTC\n' : '') + 'Màxim 300 paraules.')
+      ).then(avanca),
+      callAI(
+        'Ets un terapeuta expert en Ayurveda.' + NORMES,
+        expertContent('Valora el cas des de l\'Ayurveda. Inclou:\n1. PRAKRITI probable\n2. VIKRITI: desequilibri actual suggerit\n3. AGNI\n4. AMA\n5. DHATUS a valorar\n6. SROTAS implicats\n7. HERBES AYURVÈDIQUES: 3-4 amb dosi orientativa\n' + (hasAnalytic ? '8. CORRELACIÓ ANALÍTICA en perspectiva ayurvèdica\n' : '') + 'Màxim 270 paraules.')
+      ).then(avanca),
+      callAI(
+        'Ets un terapeuta expert en Onicodiagnosi i Auriculoteràpia.' + NORMES,
+        expertContent('Valora el cas des de l\'Onicodiagnosi i l\'Auriculoteràpia. Inclou:\n1. UNGLES: lectura de lúnules, llit ungueal, estries i forma\n2. MANS: lectura de pell, venes i coloració\n3. ORELLA: signe de Frank segons l\'observació (si és present, recomana valoració cardiovascular mèdica; si és absent, NO afirmis que el cor estigui bé, només que aquest signe no hi és)\n4. AURICULOTERÀPIA: 5-6 punts amb justificació\nMàxim 270 paraules.')
+      ).then(avanca),
+      callAI(
+        'Ets un terapeuta expert en Psiconeuroimmunologia (PNI) i Medicina Funcional Integrativa.' + NORMES,
+        expertContent('Valora el cas des de la PNI i la Medicina Funcional. Inclou:\n1. EIXOS NEUROENDOCRINS que caldria valorar (HPA/HPT/HPG)\n2. SIGNES COMPATIBLES AMB INFLAMACIÓ CRÒNICA\n3. INDICIS DE DISBIOSI\n4. POSSIBLES DÈFICITS NUTRICIONALS a confirmar\n' + (hasAnalytic ? '5. LECTURA DE L\'ANALÍTICA: indica per a cada valor rellevant el rang de referència del laboratori i el rang funcional òptim. Assenyala valors limítrofs i patrons.\n6. PARÀMETRES QUE FALTEN i per què serien útils\n' : '5. ANALÍTICA RECOMANADA: 8-10 paràmetres amb rang funcional òptim\n') + 'Màxim 300 paraules.')
+      ).then(avanca),
+      callAI(
+        'Ets un osteòpata expert en Osteopatia Integrativa i Craniosacral.' + NORMES,
+        expertContent('Valora el cas des de l\'Osteopatia. Recorda que les fotos no permeten valorar la mobilitat: proposa HIPÒTESIS a confirmar amb l\'exploració manual. Inclou:\n1. SEGMENTS VERTEBRALS a explorar\n2. VÍSCERES a valorar\n3. CRANIOSACRAL: aspectes a explorar\n4. DRENATGE LIMFÀTIC: zones a valorar\n5. PROPOSTA DE SESSIÓ (visceral → estructural → craniosacral)\n6. CONNEXIONS SOMATOVISCERALS\nMàxim 270 paraules.')
+      ).then(avanca)
+    ]);
+    expertsData.mtc = resultats[0];
+    expertsData.ayurveda = resultats[1];
+    expertsData.onique = resultats[2];
+    expertsData.pni = resultats[3];
+    expertsData.osteo = resultats[4];
+
+    // PAS 3 — Síntesi creuada
+    setPhase('Síntesi creuada dels 5 experts...', 80);
+    var analyticNote = hasAnalytic ? '\n\nAquest cas INCLOU analítica de sang. Destaca on els valors de sang reforcen o contradiuen la lectura holística. Quan coincideixen, la troballa té més consistència.' : '';
+    var synthesisContent = [{
+      type: 'text',
+      text: 'Pacient: ' + nom + ', ' + edat + ' anys.' + obsBlock + analyticContext + analyticNote +
+            '\n\n=== EXPERT MTC/IRIDOLOGIA ===\n' + expertsData.mtc +
+            '\n\n=== EXPERT AYURVEDA ===\n' + expertsData.ayurveda +
+            '\n\n=== EXPERT ONICODIAGNOSI/AURICULOTERÀPIA ===\n' + expertsData.onique +
+            '\n\n=== EXPERT PNI/MEDICINA FUNCIONAL ===\n' + expertsData.pni +
+            '\n\n=== EXPERT OSTEOPATIA ===\n' + expertsData.osteo +
+            '\n\nGENERA LA SÍNTESI CREUADA en català:\n\n🎯 VALORACIÓ INTEGRADA ORIENTATIVA — ' + nom + ' (' + edat + ' anys)\n' +
+            '\n⚠️ AVISOS DE QUALITAT I COHERÈNCIA\n[només si l\'observació indica fotos insuficients o dubtes d\'identitat/edat; si no n\'hi ha, ometre aquest apartat]\n' +
+            (hasAnalytic ? '\n🧪 CORRELACIÓ ANALÍTICA-HOLÍSTICA\n[on els valors reforcen o contradiuen la lectura holística]\n' : '') +
+            '\n⭐ CONVERGÈNCIES (3+ experts coincideixen)\n[troballes amb més consistència, amb grau de confiança]\n\n🔍 PATRÓ GLOBAL\n[quadre integrat en 4-5 frases, amb llenguatge prudent]\n\n🏥 SISTEMES A VALORAR PER PRIORITAT\n1. [sistema + justificació creuada]\n2. [sistema + justificació creuada]\n3. [sistema + justificació creuada]\n\n💬 SÍMPTOMES A PREGUNTAR AL PACIENT\n[6-8 símptomes per confirmar o descartar a l\'anamnesi]\n\n🩺 DERIVACIÓ MÈDICA\n[signes d\'alerta que justifiquen valoració mèdica; si no n\'hi ha, indica-ho]\n\n🚦 SEMÀFOR\n💚 [positiu]\n💛 [atenció moderada]\n🟠 [prioritat]\n🔴 [només si hi ha signes d\'alerta]\n\nNOMÉS en català.'
+    }];
+    expertsData.integrat = await callAI(
+      'Ets el coordinador d\'un equip de terapeutes holístics. Fas la síntesi creuada de les seves valoracions. Una troballa en què coincideixen 3 o més experts té més consistència, però continua sent orientativa.' + NORMES,
+      synthesisContent,
+      { maxTokens: 1600 }
+    );
+
+    // PAS 4 — Protocol
+    setPhase('Generant protocol terapèutic...', 90);
+    var protocolContent = [{
+      type: 'text',
+      text: 'Valoració integrada de ' + nom + ' (' + edat + ' anys):\n\n' + expertsData.integrat +
+            (hasAnalytic ? '\n\nANALÍTICA DISPONIBLE:\n' + (txtAnalytic || '(vegeu la valoració integrada)') : '') +
+            '\n\nGenera una PROPOSTA DE PROTOCOL TERAPÈUTIC INTEGRAT en català, perquè la revisi i validi el terapeuta:\n\n💉 ACUPUNTURA\nPunts principals (10-12) amb localització i acció\n\n🔥 MOXIBUSTIÓ\nPunts prioritaris, tècnica i durada\n\n🌿 HERBES XINESES\nFórmula clàssica amb composició i dosi orientativa\n\n🌱 FITOTERÀPIA OCCIDENTAL + AYURVÈDICA\n4-5 herbes amb dosi orientativa i moment\n\n🖐 OSTEOPATIA\nProposta de sessions (visceral, estructural, craniosacral)\n\n🥗 DIETOTERÀPIA MTC\nAliments prioritaris i a evitar. Exemple de dia.\n\n💊 SUPLEMENTS NUTRICIONALS\n' + (hasAnalytic ? '6-8 suplements justificats amb el valor analític corresponent: dosi, forma i moment.' : '6-8 suplements amb dosi, forma i moment, condicionats a confirmar amb analítica.') + '\n\n⚠️ PRECAUCIONS\nInteraccions amb medicació habitual (anticoagulants, antihipertensius, antidiabètics, etc.) i contraindicacions a revisar abans d\'aplicar el protocol.\n\n🧪 ANALÍTICA ' + (hasAnalytic ? 'DE CONTROL: paràmetres a repetir i valors objectiu' : 'RECOMANADA: proves prioritàries') + '\n\n📅 PLA DE SEGUIMENT\nSetmanes 1-4, mes 2, mes 3 i revisió als 6 mesos\n\nNOMÉS en català.'
+    }];
+    expertsData.protocol = await callAI(
+      'Ets un terapeuta expert en protocols holístics integratius. Proposes un protocol orientatiu que el professional ha de revisar i validar. Les dosis són orientatives i cal revisar sempre interaccions i contraindicacions. Si hi ha signes d\'alerta, el protocol comença recomanant la valoració mèdica. Respon íntegrament en català.',
+      protocolContent,
+      { maxTokens: 2000 }
+    );
+
+    setPhase('Anàlisi completada!', 100);
+
+    document.getElementById('loadMsg').style.display = 'none';
+    var txtInt = document.getElementById('txtIntegrat');
+    txtInt.textContent = expertsData.integrat;
+    txtInt.style.display = 'block';
+
+    var expColors = ['#4f46e5','#16a34a','#dc2626','#d97706','#0891b2'];
+    var expList = [
+      { ico: '🔎', nom: 'Observació objectiva de les imatges', txt: expertsData.observacio, color: '#6b7280' },
+      { ico: '☯️', nom: 'MTC + Iridologia', txt: expertsData.mtc, color: expColors[0] },
+      { ico: '🌿', nom: 'Ayurveda', txt: expertsData.ayurveda, color: expColors[1] },
+      { ico: '💅', nom: 'Onicodiagnosi + Auriculoteràpia', txt: expertsData.onique, color: expColors[2] },
+      { ico: '🧠', nom: 'PNI + Medicina Funcional', txt: expertsData.pni, color: expColors[3] },
+      { ico: '🖐', nom: 'Osteopatia Integrativa', txt: expertsData.osteo, color: expColors[4] }
+    ];
+    document.getElementById('expertsContent').innerHTML = expList.map(function(e) {
+      return '<div class="exp-card" style="border-left-color:' + e.color + '">' +
+             '<h4 style="color:' + e.color + '">' + e.ico + ' ' + e.nom + '</h4>' +
+             '<div class="exp-txt">' + e.txt.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>') + '</div>' +
+             '</div>';
+    }).join('');
+
+    document.getElementById('txtProtocol').textContent = expertsData.protocol;
+    document.getElementById('result').scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+  } catch(err) {
+    document.getElementById('loadMsg').style.display = 'none';
+    var txtErr = document.getElementById('txtIntegrat');
+    txtErr.textContent = '❌ Error durant l\'anàlisi:\n\n' + err.message + '\n\nVerifica la connexió i torna a intentar-ho.';
+    txtErr.style.display = 'block';
+    setPhase('Error — torna a intentar-ho', 0);
+  }
+
+  setTimeout(function() {
+    document.getElementById('pbarWrap').classList.remove('vis');
+    document.getElementById('phaseLbl').classList.remove('vis');
+  }, 2000);
+
+  btn.disabled = false;
+  btn.innerHTML = '<i class="ti ti-refresh"></i> Tornar a analitzar';
+}
+
+function resetAll() {
+  photos = [null, null, null, null];
+  analyticText = '';
+  analyticImage = null;
+  analyticPdf = null;
+  analyticOpen = false;
+  analyticHasData = false;
+
+  for (var i = 0; i < 4; i++) {
+    document.getElementById('c' + i).className = 'card' + (i === 0 ? ' active' : ' locked');
+    document.getElementById('s' + i).textContent = i === 0 ? '📷' : '🔒';
+    document.getElementById('p' + i).innerHTML = '<div class="ph"><i class="ti ' + icons[i] + '"></i><span>' + previews[i] + '</span></div>';
+    document.getElementById('c' + i).querySelector('.cbody').style.display = i === 0 ? 'block' : 'none';
+    document.getElementById('ic' + i).value = '';
+    document.getElementById('ig' + i).value = '';
+  }
+
+  var c4 = document.getElementById('c4');
+  c4.className = 'card optional';
+  document.getElementById('s4').textContent = '➕';
+  document.getElementById('analyticBody').style.display = 'none';
+  document.getElementById('analyticText').value = '';
+  document.getElementById('analyticImgWrap').innerHTML = '';
+  document.getElementById('prevAnalytic').classList.remove('vis');
+  document.getElementById('icAn').value = '';
+  document.getElementById('igAn').value = '';
+
+  document.getElementById('genSec').classList.remove('vis');
+  document.getElementById('result').classList.remove('vis');
+  document.getElementById('pbarWrap').classList.remove('vis');
+  document.getElementById('phaseLbl').classList.remove('vis');
+  document.getElementById('loadMsg').style.display = 'block';
+  document.getElementById('txtIntegrat').style.display = 'none';
+  document.getElementById('txtIntegrat').textContent = '';
+  document.getElementById('txtProtocol').textContent = '';
+  document.getElementById('expertsContent').innerHTML = '';
+  document.getElementById('nom').value = '';
+  document.getElementById('edat').value = '';
+  var btn = document.getElementById('genBtn');
+  btn.disabled = false;
+  btn.innerHTML = '<i class="ti ti-brain"></i> Iniciar anàlisi expert creuada';
+  showTab(0);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+</script>
+</body>
+</html>
